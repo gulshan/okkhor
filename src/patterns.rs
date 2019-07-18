@@ -1,6 +1,6 @@
-use crate::models::*;
+use crate::models::{Match::*, MatchType::*, Pattern, Rule};
 
-pub const PATTERNS: &'static [Pattern] = &[
+pub const PHONETIC_PATTERNS: &'static [Pattern] = &[
     Pattern::simple_replace("psh", "পশ"),
     Pattern::simple_replace("bhl", "ভ্ল"),
     Pattern::simple_replace("bdh", "ব্ধ"),
@@ -181,43 +181,43 @@ pub const PATTERNS: &'static [Pattern] = &[
     Pattern::simple_replace("O`", "ো"),
     Pattern {
         find: "OI",
-        default_replace: "ৈ",
+        default_replacement: "ৈ",
         rules: &[
             Rule {
-                matches: &[Match::PrefixNot(MatchType::Consonant)],
-                replace: "ঐ",
+                when_matches: &[PrefixIsNot(Consonant)],
+                replace_with: "ঐ",
             },
             Rule {
-                matches: &[Match::Prefix(MatchType::Punctuation)],
-                replace: "ঐ",
+                when_matches: &[PrefixIs(Punctuation)],
+                replace_with: "ঐ",
             },
         ],
     },
     Pattern {
         find: "OU",
-        default_replace: "ৌ",
+        default_replacement: "ৌ",
         rules: &[
             Rule {
-                matches: &[Match::PrefixNot(MatchType::Consonant)],
-                replace: "ঔ",
+                when_matches: &[PrefixIsNot(Consonant)],
+                replace_with: "ঔ",
             },
             Rule {
-                matches: &[Match::Prefix(MatchType::Punctuation)],
-                replace: "ঔ",
+                when_matches: &[PrefixIs(Punctuation)],
+                replace_with: "ঔ",
             },
         ],
     },
     Pattern {
         find: "O",
-        default_replace: "ো",
+        default_replacement: "ো",
         rules: &[
             Rule {
-                matches: &[Match::PrefixNot(MatchType::Consonant)],
-                replace: "ও",
+                when_matches: &[PrefixIsNot(Consonant)],
+                replace_with: "ও",
             },
             Rule {
-                matches: &[Match::Prefix(MatchType::Punctuation)],
-                replace: "ও",
+                when_matches: &[PrefixIs(Punctuation)],
+                replace_with: "ও",
             },
         ],
     },
@@ -235,15 +235,15 @@ pub const PATTERNS: &'static [Pattern] = &[
     Pattern::simple_replace("rri`", "ৃ"),
     Pattern {
         find: "rri",
-        default_replace: "ৃ",
+        default_replacement: "ৃ",
         rules: &[
             Rule {
-                matches: &[Match::PrefixNot(MatchType::Consonant)],
-                replace: "ঋ",
+                when_matches: &[PrefixIsNot(Consonant)],
+                replace_with: "ঋ",
             },
             Rule {
-                matches: &[Match::Prefix(MatchType::Punctuation)],
-                replace: "ঋ",
+                when_matches: &[PrefixIs(Punctuation)],
+                replace_with: "ঋ",
             },
         ],
     },
@@ -251,51 +251,48 @@ pub const PATTERNS: &'static [Pattern] = &[
     Pattern::simple_replace("rry", "রর‍্য"),
     Pattern {
         find: "rZ",
-        default_replace: "র‍্য",
+        default_replacement: "র‍্য",
         rules: &[Rule {
-            matches: &[
-                Match::Prefix(MatchType::Consonant),
-                Match::PrefixNot(MatchType::Exact('r')),
-                Match::PrefixNot(MatchType::Exact('y')),
-                Match::PrefixNot(MatchType::Exact('w')),
-                Match::PrefixNot(MatchType::Exact('x')),
+            when_matches: &[
+                PrefixIs(Consonant),
+                PrefixIsNot(Char('r')),
+                PrefixIsNot(Char('y')),
+                PrefixIsNot(Char('w')),
+                PrefixIsNot(Char('x')),
             ],
-            replace: "্র্য",
+            replace_with: "্র্য",
         }],
     },
     Pattern {
         find: "ry",
-        default_replace: "র‍্য",
+        default_replacement: "র‍্য",
         rules: &[Rule {
-            matches: &[
-                Match::Prefix(MatchType::Consonant),
-                Match::PrefixNot(MatchType::Exact('r')),
-                Match::PrefixNot(MatchType::Exact('y')),
-                Match::PrefixNot(MatchType::Exact('w')),
-                Match::PrefixNot(MatchType::Exact('x')),
+            when_matches: &[
+                PrefixIs(Consonant),
+                PrefixIsNot(Char('r')),
+                PrefixIsNot(Char('y')),
+                PrefixIsNot(Char('w')),
+                PrefixIsNot(Char('x')),
             ],
-            replace: "্র্য",
+            replace_with: "্র্য",
         }],
     },
     Pattern {
         find: "rr",
-        default_replace: "রর",
+        default_replacement: "রর",
         rules: &[
             Rule {
-                matches: &[
-                    Match::PrefixNot(MatchType::Consonant),
-                    Match::SuffixNot(MatchType::Vowel),
-                    Match::SuffixNot(MatchType::Exact('r')),
-                    Match::SuffixNot(MatchType::Punctuation),
+                when_matches: &[
+                    PrefixIsNot(Consonant),
+                    SuffixIsNot(Vowel),
+                    SuffixIsNot(Char('r')),
+                    SuffixIsNot(Punctuation),
                 ],
-                replace: "র্",
+                replace_with: "র্",
             },
             Rule {
-                matches: &[
-                    Match::Prefix(MatchType::Consonant),
-                    Match::PrefixNot(MatchType::Exact('r')),
-                ],
-                replace: "্রর",
+                when_matches: &[PrefixIs(Consonant), PrefixIsNot(Char('r'))],
+                replace_with: "্রর",
             },
         ],
     },
@@ -304,17 +301,17 @@ pub const PATTERNS: &'static [Pattern] = &[
     Pattern::simple_replace("R", "ড়"),
     Pattern {
         find: "r",
-        default_replace: "র",
+        default_replacement: "র",
         rules: &[Rule {
-            matches: &[
-                Match::Prefix(MatchType::Consonant),
-                Match::PrefixNot(MatchType::Exact('r')),
-                Match::PrefixNot(MatchType::Exact('y')),
-                Match::PrefixNot(MatchType::Exact('w')),
-                Match::PrefixNot(MatchType::Exact('x')),
-                Match::PrefixNot(MatchType::Exact('Z')),
+            when_matches: &[
+                PrefixIs(Consonant),
+                PrefixIsNot(Char('r')),
+                PrefixIsNot(Char('y')),
+                PrefixIsNot(Char('w')),
+                PrefixIsNot(Char('x')),
+                PrefixIsNot(Char('Z')),
             ],
-            replace: "্র",
+            replace_with: "্র",
         }],
     },
     Pattern::simple_replace("shch", "শ্ছ"),
@@ -358,21 +355,15 @@ pub const PATTERNS: &'static [Pattern] = &[
     Pattern::simple_replace("oo`", "ু"),
     Pattern {
         find: "oo",
-        default_replace: "ু",
+        default_replacement: "ু",
         rules: &[
             Rule {
-                matches: &[
-                    Match::PrefixNot(MatchType::Consonant),
-                    Match::SuffixNot(MatchType::Exact('`')),
-                ],
-                replace: "উ",
+                when_matches: &[PrefixIsNot(Consonant), SuffixIsNot(Char('`'))],
+                replace_with: "উ",
             },
             Rule {
-                matches: &[
-                    Match::Prefix(MatchType::Punctuation),
-                    Match::SuffixNot(MatchType::Exact('`')),
-                ],
-                replace: "উ",
+                when_matches: &[PrefixIs(Punctuation), SuffixIsNot(Char('`'))],
+                replace_with: "উ",
             },
         ],
     },
@@ -380,25 +371,19 @@ pub const PATTERNS: &'static [Pattern] = &[
     Pattern::simple_replace("oZ", "অ্য"),
     Pattern {
         find: "o",
-        default_replace: "",
+        default_replacement: "",
         rules: &[
             Rule {
-                matches: &[
-                    Match::Prefix(MatchType::Vowel),
-                    Match::PrefixNot(MatchType::Exact('o')),
-                ],
-                replace: "ও",
+                when_matches: &[PrefixIs(Vowel), PrefixIsNot(Char('o'))],
+                replace_with: "ও",
             },
             Rule {
-                matches: &[
-                    Match::Prefix(MatchType::Vowel),
-                    Match::Prefix(MatchType::Exact('o')),
-                ],
-                replace: "অ",
+                when_matches: &[PrefixIs(Vowel), PrefixIs(Char('o'))],
+                replace_with: "অ",
             },
             Rule {
-                matches: &[Match::Prefix(MatchType::Punctuation)],
-                replace: "অ",
+                when_matches: &[PrefixIs(Punctuation)],
+                replace_with: "অ",
             },
         ],
     },
@@ -419,155 +404,113 @@ pub const PATTERNS: &'static [Pattern] = &[
     Pattern::simple_replace("A`", "া"),
     Pattern {
         find: "a",
-        default_replace: "া",
+        default_replacement: "া",
         rules: &[
             Rule {
-                matches: &[
-                    Match::Prefix(MatchType::Punctuation),
-                    Match::SuffixNot(MatchType::Exact('`')),
-                ],
-                replace: "আ",
+                when_matches: &[PrefixIs(Punctuation), SuffixIsNot(Char('`'))],
+                replace_with: "আ",
             },
             Rule {
-                matches: &[
-                    Match::PrefixNot(MatchType::Consonant),
-                    Match::PrefixNot(MatchType::Exact('a')),
-                    Match::SuffixNot(MatchType::Exact('`')),
+                when_matches: &[
+                    PrefixIsNot(Consonant),
+                    PrefixIsNot(Char('a')),
+                    SuffixIsNot(Char('`')),
                 ],
-                replace: "য়া",
+                replace_with: "য়া",
             },
             Rule {
-                matches: &[
-                    Match::Prefix(MatchType::Exact('a')),
-                    Match::SuffixNot(MatchType::Exact('`')),
-                ],
-                replace: "আ",
+                when_matches: &[PrefixIs(Char('a')), SuffixIsNot(Char('`'))],
+                replace_with: "আ",
             },
         ],
     },
     Pattern::simple_replace("i`", "ি"),
     Pattern {
         find: "i",
-        default_replace: "ি",
+        default_replacement: "ি",
         rules: &[
             Rule {
-                matches: &[
-                    Match::PrefixNot(MatchType::Consonant),
-                    Match::SuffixNot(MatchType::Exact('`')),
-                ],
-                replace: "ই",
+                when_matches: &[PrefixIsNot(Consonant), SuffixIsNot(Char('`'))],
+                replace_with: "ই",
             },
             Rule {
-                matches: &[
-                    Match::Prefix(MatchType::Punctuation),
-                    Match::SuffixNot(MatchType::Exact('`')),
-                ],
-                replace: "ই",
+                when_matches: &[PrefixIs(Punctuation), SuffixIsNot(Char('`'))],
+                replace_with: "ই",
             },
         ],
     },
     Pattern::simple_replace("I`", "ী"),
     Pattern {
         find: "I",
-        default_replace: "ী",
+        default_replacement: "ী",
         rules: &[
             Rule {
-                matches: &[
-                    Match::PrefixNot(MatchType::Consonant),
-                    Match::SuffixNot(MatchType::Exact('`')),
-                ],
-                replace: "ঈ",
+                when_matches: &[PrefixIsNot(Consonant), SuffixIsNot(Char('`'))],
+                replace_with: "ঈ",
             },
             Rule {
-                matches: &[
-                    Match::Prefix(MatchType::Punctuation),
-                    Match::SuffixNot(MatchType::Exact('`')),
-                ],
-                replace: "ঈ",
+                when_matches: &[PrefixIs(Punctuation), SuffixIsNot(Char('`'))],
+                replace_with: "ঈ",
             },
         ],
     },
     Pattern::simple_replace("u`", "ু"),
     Pattern {
         find: "u",
-        default_replace: "ু",
+        default_replacement: "ু",
         rules: &[
             Rule {
-                matches: &[
-                    Match::PrefixNot(MatchType::Consonant),
-                    Match::SuffixNot(MatchType::Exact('`')),
-                ],
-                replace: "উ",
+                when_matches: &[PrefixIsNot(Consonant), SuffixIsNot(Char('`'))],
+                replace_with: "উ",
             },
             Rule {
-                matches: &[
-                    Match::Prefix(MatchType::Punctuation),
-                    Match::SuffixNot(MatchType::Exact('`')),
-                ],
-                replace: "উ",
+                when_matches: &[PrefixIs(Punctuation), SuffixIsNot(Char('`'))],
+                replace_with: "উ",
             },
         ],
     },
     Pattern::simple_replace("U`", "ূ"),
     Pattern {
         find: "U",
-        default_replace: "ূ",
+        default_replacement: "ূ",
         rules: &[
             Rule {
-                matches: &[
-                    Match::PrefixNot(MatchType::Consonant),
-                    Match::SuffixNot(MatchType::Exact('`')),
-                ],
-                replace: "ঊ",
+                when_matches: &[PrefixIsNot(Consonant), SuffixIsNot(Char('`'))],
+                replace_with: "ঊ",
             },
             Rule {
-                matches: &[
-                    Match::Prefix(MatchType::Punctuation),
-                    Match::SuffixNot(MatchType::Exact('`')),
-                ],
-                replace: "ঊ",
+                when_matches: &[PrefixIs(Punctuation), SuffixIsNot(Char('`'))],
+                replace_with: "ঊ",
             },
         ],
     },
     Pattern::simple_replace("ee`", "ী"),
     Pattern {
         find: "ee",
-        default_replace: "ী",
+        default_replacement: "ী",
         rules: &[
             Rule {
-                matches: &[
-                    Match::PrefixNot(MatchType::Consonant),
-                    Match::SuffixNot(MatchType::Exact('`')),
-                ],
-                replace: "ঈ",
+                when_matches: &[PrefixIsNot(Consonant), SuffixIsNot(Char('`'))],
+                replace_with: "ঈ",
             },
             Rule {
-                matches: &[
-                    Match::Prefix(MatchType::Punctuation),
-                    Match::SuffixNot(MatchType::Exact('`')),
-                ],
-                replace: "ঈ",
+                when_matches: &[PrefixIs(Punctuation), SuffixIsNot(Char('`'))],
+                replace_with: "ঈ",
             },
         ],
     },
     Pattern::simple_replace("e`", "ে"),
     Pattern {
         find: "e",
-        default_replace: "ে",
+        default_replacement: "ে",
         rules: &[
             Rule {
-                matches: &[
-                    Match::PrefixNot(MatchType::Consonant),
-                    Match::SuffixNot(MatchType::Exact('`')),
-                ],
-                replace: "এ",
+                when_matches: &[PrefixIsNot(Consonant), SuffixIsNot(Char('`'))],
+                replace_with: "এ",
             },
             Rule {
-                matches: &[
-                    Match::Prefix(MatchType::Punctuation),
-                    Match::SuffixNot(MatchType::Exact('`')),
-                ],
-                replace: "এ",
+                when_matches: &[PrefixIs(Punctuation), SuffixIsNot(Char('`'))],
+                replace_with: "এ",
             },
         ],
     },
@@ -575,18 +518,15 @@ pub const PATTERNS: &'static [Pattern] = &[
     Pattern::simple_replace("Z", "্য"),
     Pattern {
         find: "y",
-        default_replace: "্য",
+        default_replacement: "্য",
         rules: &[
             Rule {
-                matches: &[
-                    Match::PrefixNot(MatchType::Consonant),
-                    Match::PrefixNot(MatchType::Punctuation),
-                ],
-                replace: "য়",
+                when_matches: &[PrefixIsNot(Consonant), PrefixIsNot(Punctuation)],
+                replace_with: "য়",
             },
             Rule {
-                matches: &[Match::Prefix(MatchType::Punctuation)],
-                replace: "ইয়",
+                when_matches: &[PrefixIs(Punctuation)],
+                replace_with: "ইয়",
             },
         ],
     },
@@ -594,27 +534,24 @@ pub const PATTERNS: &'static [Pattern] = &[
     Pattern::simple_replace("q", "ক"),
     Pattern {
         find: "w",
-        default_replace: "ও",
+        default_replacement: "ও",
         rules: &[
             Rule {
-                matches: &[
-                    Match::Prefix(MatchType::Punctuation),
-                    Match::Suffix(MatchType::Vowel),
-                ],
-                replace: "ওয়",
+                when_matches: &[PrefixIs(Punctuation), SuffixIs(Vowel)],
+                replace_with: "ওয়",
             },
             Rule {
-                matches: &[Match::Prefix(MatchType::Consonant)],
-                replace: "্ব",
+                when_matches: &[PrefixIs(Consonant)],
+                replace_with: "্ব",
             },
         ],
     },
     Pattern {
         find: "x",
-        default_replace: "ক্স",
+        default_replacement: "ক্স",
         rules: &[Rule {
-            matches: &[Match::Prefix(MatchType::Punctuation)],
-            replace: "এক্স",
+            when_matches: &[PrefixIs(Punctuation)],
+            replace_with: "এক্স",
         }],
     },
     Pattern::simple_replace(":`", ":"),

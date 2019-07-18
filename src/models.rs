@@ -2,25 +2,25 @@ pub enum MatchType {
     Vowel,
     Consonant,
     Punctuation,
-    Exact(char),
+    Char(char),
 }
 
 pub enum Match {
-    Prefix(MatchType),
-    Suffix(MatchType),
-    PrefixNot(MatchType),
-    SuffixNot(MatchType),
+    PrefixIs(MatchType),
+    SuffixIs(MatchType),
+    PrefixIsNot(MatchType),
+    SuffixIsNot(MatchType),
 }
 
 pub struct Rule {
-    pub matches: &'static [Match],
-    pub replace: &'static str,
+    pub when_matches: &'static [Match],
+    pub replace_with: &'static str,
 }
 
 pub struct Pattern {
     pub find: &'static str,
     pub rules: &'static [Rule],
-    pub default_replace: &'static str,
+    pub default_replacement: &'static str,
 }
 
 const NO_RULES: &'static [Rule] = &[];
@@ -30,7 +30,7 @@ impl Pattern {
         Pattern {
             find: find,
             rules: NO_RULES,
-            default_replace: replace,
+            default_replacement: replace,
         }
     }
 }
