@@ -51,7 +51,7 @@ pub fn parse(raw_input: &str) -> String {
 
     let mut prefix = ' ';
     let mut current_input = &input[0..];
-    let mut output = String::new();
+    let mut output = String::with_capacity(input.len());
 
     while !current_input.is_empty() {
         let match_result = PHONETIC_PATTERNS

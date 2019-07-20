@@ -4,4 +4,10 @@ version = "0.1.0"
 authors = ["Gulshanur Rahman<gulshanur@gmail.com>"]
 edition = "2018"
 
-[dependencies]
+[dev-dependencies]
+criterion = "0.2"
+rupantor = "0.2"
+
+[[bench]]
+name = "benching"
+harness = false

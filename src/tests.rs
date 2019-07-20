@@ -3,6 +3,7 @@ use crate::parser::parse;
 
 #[test]
 fn test_sentences() {
+    assert_eq!("ঘটোৎকচ", parse("ghoTOt``kc"));
     assert_eq!(
         "আমি বাংলায় গান গাই",
         parse("ami banglay gan gai")
