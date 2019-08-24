@@ -1,6 +1,6 @@
 use crate::models::{Match::*, MatchType::*, Pattern, Rule};
 
-pub const PHONETIC_PATTERNS: &'static [Pattern] = &[
+pub const PHONETIC_PATTERNS: &[Pattern] = &[
     Pattern::simple_replace("psh", "পশ"),
     Pattern::simple_replace("bhl", "ভ্ল"),
     Pattern::simple_replace("bdh", "ব্ধ"),

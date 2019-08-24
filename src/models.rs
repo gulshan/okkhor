@@ -23,7 +23,7 @@ pub struct Pattern {
     pub default_replacement: &'static str,
 }
 
-const NO_RULES: &'static [Rule] = &[];
+const NO_RULES: &[Rule] = &[];
 
 impl Pattern {
     pub const fn simple_replace(find: &'static str, replace: &'static str) -> Pattern {

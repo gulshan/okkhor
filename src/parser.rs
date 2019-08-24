@@ -14,7 +14,7 @@ fn is_punctuation(c: char) -> bool {
 }
 
 fn conditional_lowercase(c: char) -> char {
-    const CASE_SENSITIVE_CHARS: &'static str = "oiudgjnrstyz";
+    const CASE_SENSITIVE_CHARS: &str = "oiudgjnrstyz";
     let lowercase_c = c.to_ascii_lowercase();
     if CASE_SENSITIVE_CHARS.contains(lowercase_c) {
         c
