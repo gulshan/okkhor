@@ -68,12 +68,11 @@ pub fn parse(raw_input: &str) -> String {
                     .all(|m| m.does_match(prefix, suffix))
             });
 
-            let replacement = match matched_rule {
-                Some(rule) => rule.replace_with,
-                None => pattern.default_replacement,
+            match matched_rule {
+                Some(rule) => output.push_str(rule.replace_with),
+                None => output.push_str(pattern.default_replacement),
             };
 
-            output.push_str(replacement);
             prefix = current_input.chars().nth(pattern.find.len() - 1).unwrap();
             current_input = &current_input[pattern.find.len()..];
         } else {
