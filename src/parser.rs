@@ -1,16 +1,19 @@
 use crate::models::{Match, Match::*, MatchType::*};
 use crate::patterns::PHONETIC_PATTERNS;
 
-fn is_vowel(c: char) -> bool {
-    "aeiou".contains(c.to_ascii_lowercase())
+const fn is_vowel(c: char) -> bool {
+    match c {
+        'a'|'e'|'i'|'o'|'u'|'A'|'E'|'I'|'O'|'U' => true,
+        _ => false
+    }
 }
 
-fn is_consonant(c: char) -> bool {
-    "bcdfghjklmnpqrstvwxyz".contains(c.to_ascii_lowercase())
+const fn is_consonant(c: char) -> bool {
+    !is_vowel(c) && c.is_ascii_alphabetic()
 }
 
-fn is_punctuation(c: char) -> bool {
-    !is_vowel(c) && !is_consonant(c)
+const fn is_punctuation(c: char) -> bool {
+    !c.is_ascii_alphabetic()
 }
 
 fn conditional_lowercase(c: char) -> char {
@@ -24,7 +27,7 @@ fn conditional_lowercase(c: char) -> char {
 }
 
 impl Match {
-    fn does_match(&self, prefix: char, suffix: char) -> bool {
+    const fn does_match(&self, prefix: char, suffix: char) -> bool {
         match *self {
             PrefixIs(Vowel) => is_vowel(prefix),
             PrefixIsNot(Vowel) => !is_vowel(prefix),
@@ -62,7 +65,7 @@ pub fn parse(raw_input: &str) -> String {
         if let Some(pattern) = match_result {
             let suffix = current_input.chars().nth(pattern.find.len()).unwrap_or(' ');
 
-            let matched_rule = pattern.rules.iter().find(|rule| {
+            let matched_rule = pattern.rules.into_iter().find(|rule| {
                 rule.when_matches
                     .iter()
                     .all(|m| m.does_match(prefix, suffix))
