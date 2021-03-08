@@ -1,12 +1,12 @@
 [package]
 name = "okkhor-lib"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Gulshanur Rahman<gulshanur@gmail.com>"]
 edition = "2018"
 
 [dev-dependencies]
-criterion = "0.2"
-rupantor = "0.2"
+criterion = "0.3.4"
+rupantor = "0.3"
 
 [[bench]]
 name = "benching"
