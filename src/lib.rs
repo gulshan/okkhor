@@ -1,7 +1,8 @@
-pub mod editor;
 mod models;
-pub mod parser;
 mod patterns;
+pub mod parser;
+pub mod editor;
+
 
 #[cfg(test)]
 mod tests;

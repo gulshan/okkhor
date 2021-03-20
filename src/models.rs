@@ -26,7 +26,7 @@ pub(crate) struct Pattern {
 impl Pattern {
     pub const fn simple_replace(find: &'static str, replace: &'static str) -> Pattern {
         Pattern {
-            find: find,
+            find,
             rules: &[],
             default_replacement: replace,
         }
