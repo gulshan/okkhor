@@ -1,4 +1,4 @@
-use crate::models::{Match, Match::*, MatchType::*};
+use crate::models::{Match, Match::*, MatchType::*, Pattern};
 use crate::patterns::PHONETIC_PATTERNS;
 
 const fn is_vowel(c: char) -> bool {
@@ -62,26 +62,36 @@ pub fn parse(raw_input: &str) -> String {
             .filter(|p| current_input.starts_with(p.find))
             .max_by_key(|p| p.find.len());
 
-        if let Some(pattern) = match_result {
-            let suffix = current_input.chars().nth(pattern.find.len()).unwrap_or(' ');
+        match match_result {
+            Some(Pattern {
+                find,
+                rules,
+                default_replacement,
+            }) => {
+                if rules.is_empty() {
+                    output.push_str(default_replacement);
+                } else {
+                    let suffix = current_input.chars().nth(find.len()).unwrap_or(' ');
 
-            let matched_rule = pattern.rules.into_iter().find(|rule| {
-                rule.when_matches
-                    .iter()
-                    .all(|m| m.does_match(prefix, suffix))
-            });
+                    let matched_rule = rules.into_iter().find(|rule| {
+                        rule.when_matches
+                            .iter()
+                            .all(|m| m.does_match(prefix, suffix))
+                    });
 
-            match matched_rule {
-                Some(rule) => output.push_str(rule.replace_with),
-                None => output.push_str(pattern.default_replacement),
-            };
-
-            prefix = current_input.chars().nth(pattern.find.len() - 1).unwrap();
-            current_input = &current_input[pattern.find.len()..];
-        } else {
-            prefix = current_input.chars().next().unwrap();
-            output.push(prefix);
-            current_input = &current_input[1..];
+                    match matched_rule {
+                        Some(rule) => output.push_str(rule.replace_with),
+                        None => output.push_str(default_replacement),
+                    };
+                }
+                prefix = find.chars().last().unwrap();
+                current_input = &current_input[find.len()..];
+            }
+            None => {
+                prefix = current_input.chars().next().unwrap();
+                output.push(prefix);
+                current_input = &current_input[1..];
+            }
         }
     }
 
