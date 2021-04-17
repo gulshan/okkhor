@@ -1,11 +1,11 @@
 #[macro_use]
 extern crate criterion;
-extern crate okkhor_lib;
+extern crate okkhor;
 extern crate rupantor;
 
 use criterion::black_box;
 use criterion::Criterion;
-use okkhor_lib::parser::Phonetic;
+use okkhor::parser::Phonetic;
 use rupantor::avro::AvroPhonetic;
 
 fn parse_benchmark(c: &mut Criterion) {
