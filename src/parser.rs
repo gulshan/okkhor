@@ -66,7 +66,7 @@ impl Phonetic {
 
         let mut prefix = ' ';
         let mut current_input = &input[0..];
-        let mut output = String::with_capacity(input.len());
+        let mut output = String::with_capacity(input.len() * 3);
 
         while !current_input.is_empty() {
             let match_result = self

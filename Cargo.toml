@@ -4,6 +4,9 @@ version = "0.2.0"
 authors = ["Gulshanur Rahman<gulshanur@gmail.com>"]
 edition = "2018"
 
+[lib]
+bench = false
+
 [dev-dependencies]
 criterion = "0.3.4"
 rupantor = "0.3"
