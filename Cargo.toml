@@ -1,5 +1,5 @@
 [package]
-name = "okkhor-lib"
+name = "okkhor"
 version = "0.2.0"
 authors = ["Gulshanur Rahman<gulshanur@gmail.com>"]
 edition = "2018"
