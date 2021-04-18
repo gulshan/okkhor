@@ -1,8 +1,12 @@
 [package]
 name = "okkhor"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Gulshanur Rahman<gulshanur@gmail.com>"]
 edition = "2018"
+
+[features]
+editor = []
+regex = []
 
 [lib]
 bench = false

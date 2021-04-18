@@ -50,7 +50,7 @@ const fn does_match(_match: &Match, prefix: char, suffix: char) -> bool {
 }
 
 pub struct Phonetic {
-    patterns: Vec<&'static Pattern>,
+    pub(crate) patterns: Vec<&'static Pattern>,
 }
 
 impl Phonetic {

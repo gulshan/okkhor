@@ -1,4 +1,3 @@
-use crate::editor::PhoneticEditor;
 use crate::parser::Phonetic;
 
 #[test]
@@ -6,10 +5,7 @@ fn test_sentences() {
     let p = Phonetic::new();
     assert_eq!("ঘটোৎকচ", p.convert("ghoTOt``kc"));
     assert_eq!("আমার সোনার বাংলা", p.convert("amar sOnar bangla"));
-    assert_eq!(
-        "আমি বাংলায় গান গাই",
-        p.convert("ami banglay gan gai")
-    );
+    assert_eq!("আমি বাংলায় গান গাই", p.convert("ami banglay gan gai"));
     assert_eq!(
         "আমাদের ভালোবাসা হয়ে গেল ঘাস, খেয়ে গেল গরু আর দিয়ে গেল বাঁশ",
         p.convert("amader valObasa hoye gel ghas, kheye gel goru ar diye gelo ba^sh")
@@ -475,9 +471,10 @@ fn basic_test8() {
     assert_eq!("ব্ধ", p.convert("bdh"));
 }
 
+#[cfg(feature = "editor")]
 #[test]
 fn editor_test() {
-    let mut editor = PhoneticEditor::new();
+    let mut editor = crate::editor::PhoneticEditor::new();
 
     let result = editor.put_new_ch('k', 1);
     assert_eq!("ক", result.output);
