@@ -1,4 +1,5 @@
 use crate::models::{Match::*, MatchType::*, Pattern, Rule};
+use std::collections::BTreeMap;
 
 pub(crate) const REGEX_PATTERNS: &[Pattern] = &[
     Pattern::simple_replace("chchh", "((চ্ছ)|((চ|ছ|([চছ]্?(হ|ঃ|(হ্‌?))))্?(((চ|ছ|([চছ]্?(হ|ঃ|(হ্‌?))))্?((হ|ঃ|(হ্‌?)))?)|([চছ]্?((হ|ঃ|(হ্‌?))্?(হ|ঃ|(হ্‌?))))|([চছ]্?(হ|ঃ|(হ্‌?))্?(হ|ঃ|(হ্‌?)))))|((চ|ছ|([চছ]্?(হ|ঃ|(হ্‌?))))্?(চ|ছ|([চছ]্?(হ|ঃ|(হ্‌?))))্?(হ|ঃ|(হ্‌?)))|([চছ]্?(হ|ঃ|(হ্‌?))্?[চছ]্?(হ|ঃ|(হ্‌?))্?(হ|ঃ|(হ্‌?))))"),
@@ -180,9 +181,10 @@ pub(crate) const REGEX_PATTERNS: &[Pattern] = &[
 
 impl crate::parser::Phonetic {
     pub fn new_regex() -> crate::parser::Phonetic {
-        let mut patterns = REGEX_PATTERNS.iter().collect::<Vec<_>>();
-        // Sorting patterns by the 'find' part in reverse, to get the first match as the best match
-        patterns.sort_by(|a, b| b.find.cmp(a.find));
+        let patterns = REGEX_PATTERNS
+            .iter()
+            .map(|p| (p.find, p))
+            .collect::<BTreeMap<_, _>>();
         crate::parser::Phonetic { patterns }
     }
 }

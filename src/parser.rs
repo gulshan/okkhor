@@ -2,6 +2,7 @@ use crate::{
     models::{Match, Match::*, MatchType::*, Pattern},
     patterns::PHONETIC_PATTERNS,
 };
+use std::collections::BTreeMap;
 
 fn conditional_lowercase(c: char) -> char {
     const CASE_SENSITIVE_CHARS: &str = "oiudgjnrstyz";
@@ -50,14 +51,15 @@ const fn does_match(_match: &Match, prefix: char, suffix: char) -> bool {
 }
 
 pub struct Phonetic {
-    pub(crate) patterns: Vec<&'static Pattern>,
+    pub(crate) patterns: BTreeMap<&'static str, &'static Pattern>,
 }
 
 impl Phonetic {
     pub fn new() -> Phonetic {
-        let mut patterns = PHONETIC_PATTERNS.iter().collect::<Vec<&Pattern>>();
-        // Sorting patterns by the 'find' part in reverse, to get the first match as the best match
-        patterns.sort_by(|a, b| b.find.cmp(a.find));
+        let patterns = PHONETIC_PATTERNS
+            .iter()
+            .map(|p| (p.find, p))
+            .collect::<BTreeMap<_, _>>();
         Phonetic { patterns }
     }
 
@@ -71,8 +73,10 @@ impl Phonetic {
         while !current_input.is_empty() {
             let match_result = self
                 .patterns
-                .iter()
-                .find(|p| current_input.starts_with(p.find));
+                .range(..=current_input)
+                .rev()
+                .find(|(k, _)| current_input.starts_with(*k))
+                .map(|(_, p)| p);
 
             match match_result {
                 Some(Pattern {
