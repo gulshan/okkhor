@@ -96,7 +96,6 @@ impl Parser {
                 }) => {
                     if rules.is_empty() {
                         output.push_str(default_replacement);
-                        output.push_str(extra);
                     } else {
                         let suffix = current_input.chars().nth(find.len()).unwrap_or(' ');
 
@@ -110,8 +109,8 @@ impl Parser {
                             Some(rule) => output.push_str(rule.replace_with),
                             None => output.push_str(default_replacement),
                         };
-                        output.push_str(extra);
                     }
+                    output.push_str(extra);
                     prefix = find.chars().last().unwrap();
                     current_input = &current_input[find.len()..];
                 }
