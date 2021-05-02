@@ -1,8 +1,8 @@
-use crate::parser::Phonetic;
+use crate::parser::Parser;
 
 #[test]
 fn test_sentences() {
-    let p = Phonetic::new();
+    let p = Parser::new_phonetic();
     assert_eq!("ঘটোৎকচ", p.convert("ghoTOt``kc"));
     assert_eq!("আমার সোনার বাংলা", p.convert("amar sOnar bangla"));
     assert_eq!("আমি বাংলায় গান গাই", p.convert("ami banglay gan gai"));
@@ -14,7 +14,7 @@ fn test_sentences() {
 
 #[test]
 fn basic_test1() {
-    let p = Phonetic::new();
+    let p = Parser::new_phonetic();
 
     assert_eq!("ভ্ল", p.convert("bhl"));
     assert_eq!("ব্জ", p.convert("bj"));
@@ -48,7 +48,7 @@ fn basic_test1() {
 
 #[test]
 fn basic_test2() {
-    let p = Phonetic::new();
+    let p = Parser::new_phonetic();
 
     assert_eq!("...", p.convert("..."));
     assert_eq!(".", p.convert(".`"));
@@ -80,7 +80,7 @@ fn basic_test2() {
 
 #[test]
 fn basic_test3() {
-    let p = Phonetic::new();
+    let p = Parser::new_phonetic();
 
     assert_eq!("জ্ঝ", p.convert("jjh"));
     assert_eq!("জ্ঞ", p.convert("jNG"));
@@ -124,7 +124,7 @@ fn basic_test3() {
 
 #[test]
 fn basic_test4() {
-    let p = Phonetic::new();
+    let p = Parser::new_phonetic();
 
     assert_eq!("ম্থ", p.convert("mth"));
     assert_eq!("ম্ফ", p.convert("mph"));
@@ -208,7 +208,7 @@ fn basic_test4() {
 
 #[test]
 fn basic_test5() {
-    let p = Phonetic::new();
+    let p = Parser::new_phonetic();
 
     assert_eq!("ৈ", p.convert("OI`"));
     assert_eq!("ৌ", p.convert("OU`"));
@@ -250,7 +250,7 @@ fn basic_test5() {
 
 #[test]
 fn basic_test6() {
-    let p = Phonetic::new();
+    let p = Parser::new_phonetic();
 
     assert_eq!("ক্র্য", p.convert("krZ"));
     assert_eq!("রর‍্য", p.convert("rrZ"));
@@ -295,7 +295,7 @@ fn basic_test6() {
 
 #[test]
 fn basic_test7() {
-    let p = Phonetic::new();
+    let p = Parser::new_phonetic();
 
     assert_eq!("শ্ছ", p.convert("shch"));
     assert_eq!("ষ্ঠ", p.convert("ShTh"));
@@ -373,7 +373,7 @@ fn basic_test7() {
 
 #[test]
 fn basic_test8() {
-    let p = Phonetic::new();
+    let p = Parser::new_phonetic();
 
     assert_eq!("অ্যা", p.convert("aZ"));
     assert_eq!("আঅ্যা", p.convert("aaZ"));

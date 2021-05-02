@@ -5,16 +5,16 @@ extern crate rupantor;
 
 use criterion::black_box;
 use criterion::Criterion;
-use okkhor::parser::Phonetic;
+use okkhor::parser::Parser;
 use rupantor::avro::AvroPhonetic;
 
 fn parse_benchmark(c: &mut Criterion) {
-    c.bench_function("okkhor new", |b| b.iter(|| Phonetic::new()));
+    c.bench_function("okkhor new", |b| b.iter(|| Parser::new_phonetic()));
     c.bench_function("rupantor new", |b| b.iter(|| AvroPhonetic::new()));
 
     let input1 = "ami";
     c.bench_function("okkhor ami", |b| {
-        let okkhor = Phonetic::new();
+        let okkhor = Parser::new_phonetic();
         b.iter(|| okkhor.convert(black_box(input1)))
     });
     c.bench_function("rupantor ami", |b| {
@@ -24,7 +24,7 @@ fn parse_benchmark(c: &mut Criterion) {
 
     let input2 = "korrm";
     c.bench_function("okkhor kormo", |b| {
-        let okkhor = Phonetic::new();
+        let okkhor = Parser::new_phonetic();
         b.iter(|| okkhor.convert(black_box(input2)))
     });
     c.bench_function("rupantor kormo", |b| {
@@ -34,7 +34,7 @@ fn parse_benchmark(c: &mut Criterion) {
 
     let input3 = "bistarito";
     c.bench_function("okkhor bistarito", |b| {
-        let okkhor = Phonetic::new();
+        let okkhor = Parser::new_phonetic();
         b.iter(|| okkhor.convert(black_box(input3)))
     });
     c.bench_function("rupantor bistarito", |b| {
@@ -44,7 +44,7 @@ fn parse_benchmark(c: &mut Criterion) {
 
     let input4 = "ghoTOt``kc";
     c.bench_function("okkhor long word", |b| {
-        let okkhor = Phonetic::new();
+        let okkhor = Parser::new_phonetic();
         b.iter(|| okkhor.convert(black_box(input4)))
     });
     c.bench_function("rupantor long word", |b| {
@@ -54,7 +54,7 @@ fn parse_benchmark(c: &mut Criterion) {
 
     let input5 = "amar sOnar bangla";
     c.bench_function("okkhor sonar bangla", |b| {
-        let okkhor = Phonetic::new();
+        let okkhor = Parser::new_phonetic();
         b.iter(|| okkhor.convert(black_box(input5)))
     });
     c.bench_function("rupantor sonar bangla", |b| {
@@ -64,7 +64,7 @@ fn parse_benchmark(c: &mut Criterion) {
 
     let input6 = "ami banglay gan gai";
     c.bench_function("okkhor sentence 1", |b| {
-        let okkhor = Phonetic::new();
+        let okkhor = Parser::new_phonetic();
         b.iter(|| okkhor.convert(black_box(input6)))
     });
     c.bench_function("rupantor sentence 1", |b| {
@@ -74,7 +74,7 @@ fn parse_benchmark(c: &mut Criterion) {
 
     let input7 = "amader valObasa hoye gel ghas, kheye gel goru ar diye gelo ba^sh";
     c.bench_function("okkhor sentence 2", |b| {
-        let okkhor = Phonetic::new();
+        let okkhor = Parser::new_phonetic();
         b.iter(|| okkhor.convert(black_box(input7)))
     });
     c.bench_function("rupantor sentence 2", |b| {

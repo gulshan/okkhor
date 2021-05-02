@@ -50,17 +50,21 @@ const fn does_match(_match: &Match, prefix: char, suffix: char) -> bool {
     }
 }
 
-pub struct Phonetic {
-    pub(crate) patterns: BTreeMap<&'static str, &'static Pattern>,
+pub struct Parser {
+    patterns: BTreeMap<&'static str, &'static Pattern>,
 }
 
-impl Phonetic {
-    pub fn new() -> Phonetic {
-        let patterns = PHONETIC_PATTERNS
+impl Parser {
+    pub fn new_phonetic() -> Parser {
+        Self::new(PHONETIC_PATTERNS)
+    }
+
+    pub(crate) fn new(patterns_input: &'static [Pattern]) -> Parser {
+        let patterns = patterns_input
             .iter()
             .map(|p| (p.find, p))
             .collect::<BTreeMap<_, _>>();
-        Phonetic { patterns }
+        Parser { patterns }
     }
 
     pub fn convert(&self, raw_input: &str) -> String {

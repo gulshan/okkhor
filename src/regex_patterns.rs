@@ -1,5 +1,7 @@
-use crate::models::{Match::*, MatchType::*, Pattern, Rule};
-use std::collections::BTreeMap;
+use crate::{
+    models::{Match::*, MatchType::*, Pattern, Rule},
+    parser::Parser,
+};
 
 pub(crate) const REGEX_PATTERNS: &[Pattern] = &[
     Pattern::simple_replace("chchh", "((চ্ছ)|((চ|ছ|([চছ]্?(হ|ঃ|(হ্‌?))))্?(((চ|ছ|([চছ]্?(হ|ঃ|(হ্‌?))))্?((হ|ঃ|(হ্‌?)))?)|([চছ]্?((হ|ঃ|(হ্‌?))্?(হ|ঃ|(হ্‌?))))|([চছ]্?(হ|ঃ|(হ্‌?))্?(হ|ঃ|(হ্‌?)))))|((চ|ছ|([চছ]্?(হ|ঃ|(হ্‌?))))্?(চ|ছ|([চছ]্?(হ|ঃ|(হ্‌?))))্?(হ|ঃ|(হ্‌?)))|([চছ]্?(হ|ঃ|(হ্‌?))্?[চছ]্?(হ|ঃ|(হ্‌?))্?(হ|ঃ|(হ্‌?))))"),
@@ -179,12 +181,8 @@ pub(crate) const REGEX_PATTERNS: &[Pattern] = &[
     Pattern::simple_replace("z", "(জ|য|(জ়)|([‌‍]?্য))"),
 ];
 
-impl crate::parser::Phonetic {
-    pub fn new_regex() -> crate::parser::Phonetic {
-        let patterns = REGEX_PATTERNS
-            .iter()
-            .map(|p| (p.find, p))
-            .collect::<BTreeMap<_, _>>();
-        crate::parser::Phonetic { patterns }
+impl Parser {
+    pub fn new_regex() -> Parser {
+        Self::new(REGEX_PATTERNS)
     }
 }

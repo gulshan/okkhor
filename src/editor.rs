@@ -1,10 +1,10 @@
-use crate::parser::Phonetic;
+use crate::parser::Parser;
 
 pub struct PhoneticEditor {
     input_buffer: String,
     last_output_len: usize,
     last_cursor_pos: usize,
-    parser: Phonetic,
+    parser: Parser,
 }
 
 #[derive(Debug)]
@@ -19,7 +19,7 @@ impl PhoneticEditor {
             input_buffer: String::new(),
             last_output_len: 0,
             last_cursor_pos: 0,
-            parser: Phonetic::new(),
+            parser: Parser::new_phonetic(),
         }
     }
 
