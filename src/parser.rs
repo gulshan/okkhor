@@ -69,10 +69,16 @@ impl Parser {
 
     pub fn convert(&self, raw_input: &str) -> String {
         let input: String = raw_input.chars().map(conditional_lowercase).collect();
+        let mut output = String::with_capacity(input.len() * 3);
 
+        self.convert_internal(&input, &mut output, "");
+
+        output
+    }
+
+    pub(crate) fn convert_internal(&self, input: &str, output: &mut String, extra: &str) {
         let mut prefix = ' ';
         let mut current_input = &input[0..];
-        let mut output = String::with_capacity(input.len() * 3);
 
         while !current_input.is_empty() {
             let match_result = self
@@ -104,6 +110,7 @@ impl Parser {
                             None => output.push_str(default_replacement),
                         };
                     }
+                    output.push_str(extra);
                     prefix = find.chars().last().unwrap();
                     current_input = &current_input[find.len()..];
                 }
@@ -114,7 +121,5 @@ impl Parser {
                 }
             }
         }
-
-        output
     }
 }

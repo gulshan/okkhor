@@ -181,8 +181,21 @@ pub(crate) const REGEX_PATTERNS: &[Pattern] = &[
     Pattern::simple_replace("z", "(জ|য|(জ়)|([‌‍]?্য))"),
 ];
 
+const IGNORE: &str = "|()[]{}^$*+?.~!@#%&-_='\";<>/\\,:`";
+
 impl Parser {
     pub fn new_regex() -> Parser {
         Self::new(REGEX_PATTERNS)
+    }
+
+    pub fn convert_regex(&self, raw_input: &str) -> String {
+        let input: String = raw_input.to_ascii_lowercase().chars().filter(|&ch| !IGNORE.contains(ch)).collect();
+        let mut output = String::with_capacity(input.len() * 60);
+
+        output.push('^');
+        self.convert_internal(&input, &mut output, "(্[যবম])?(্?)([ঃঁ]?)");
+        output.push('$');
+        
+        output
     }
 }
