@@ -191,11 +191,11 @@ impl Parser {
     pub fn convert_regex(&self, raw_input: &str) -> String {
         let input: String = raw_input.to_ascii_lowercase().chars().filter(|&ch| !IGNORE.contains(ch)).collect();
         let mut output = String::with_capacity(input.len() * 60);
+
         output.push('^');
-
         self.convert_internal(&input, &mut output, "(্[যবম])?(্?)([ঃঁ]?)");
-
         output.push('$');
+        
         output
     }
 }
