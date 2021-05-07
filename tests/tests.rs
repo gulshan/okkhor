@@ -1,4 +1,4 @@
-use crate::parser::Parser;
+use okkhor::parser::Parser;
 
 #[test]
 fn test_sentences() {
@@ -474,7 +474,7 @@ fn basic_test8() {
 #[cfg(feature = "editor")]
 #[test]
 fn editor_test() {
-    let mut editor = crate::editor::PhoneticEditor::new();
+    let mut editor = okkhor::editor::PhoneticEditor::new();
 
     let result = editor.put_new_ch('k', 1);
     assert_eq!("ক", result.output);

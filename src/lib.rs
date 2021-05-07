@@ -5,7 +5,3 @@ mod regex_patterns;
 pub mod parser;
 #[cfg(feature = "editor")]
 pub mod editor;
-
-
-#[cfg(test)]
-mod tests;
