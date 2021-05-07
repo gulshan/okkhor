@@ -69,56 +69,54 @@ impl Parser {
 
     pub fn convert(&self, raw_input: &str) -> String {
         let input: String = raw_input.chars().map(conditional_lowercase).collect();
+
+        let mut prefix = ' ';
+        let mut input = &input[0..];
         let mut output = String::with_capacity(input.len() * 3);
 
-        self.convert_internal(&input, &mut output, "");
+        while !input.is_empty() {
+            match self.find_pattern(input) {
+                Some(pattern) => {
+                    output.push_str(pattern.get_replacement(input, prefix));
+                    prefix = pattern.find.chars().last().unwrap();
+                    input = &input[pattern.find.len()..];
+                }
+                None => {
+                    prefix = input.chars().next().unwrap();
+                    output.push(prefix);
+                    input = &input[1..];
+                }
+            }
+        }
 
         output
     }
 
-    pub(crate) fn convert_internal(&self, input: &str, output: &mut String, extra: &str) {
-        let mut prefix = ' ';
-        let mut current_input = &input[0..];
+    pub(crate) fn find_pattern(&self, input: &str) -> Option<&Pattern> {
+        self.patterns
+            .range(..=input)
+            .rev()
+            .find(|(&k, _)| input.starts_with(k))
+            .map(|(_, &p)| p)
+    }
+}
 
-        while !current_input.is_empty() {
-            let match_result = self
-                .patterns
-                .range(..=current_input)
-                .rev()
-                .find(|(k, _)| current_input.starts_with(*k))
-                .map(|(_, p)| p);
+impl Pattern {
+    pub(crate) fn get_replacement(&self, input: &str, prefix: char) -> &str {
+        if self.rules.is_empty() {
+            self.default_replacement
+        } else {
+            let suffix = input.chars().nth(self.find.len()).unwrap_or(' ');
 
-            match match_result {
-                Some(Pattern {
-                    find,
-                    rules,
-                    default_replacement,
-                }) => {
-                    if rules.is_empty() {
-                        output.push_str(default_replacement);
-                    } else {
-                        let suffix = current_input.chars().nth(find.len()).unwrap_or(' ');
+            let matched_rule = self.rules.into_iter().find(|rule| {
+                rule.when_matches
+                    .iter()
+                    .all(|m| does_match(m, prefix, suffix))
+            });
 
-                        let matched_rule = rules.into_iter().find(|rule| {
-                            rule.when_matches
-                                .iter()
-                                .all(|m| does_match(m, prefix, suffix))
-                        });
-
-                        match matched_rule {
-                            Some(rule) => output.push_str(rule.replace_with),
-                            None => output.push_str(default_replacement),
-                        };
-                    }
-                    output.push_str(extra);
-                    prefix = find.chars().last().unwrap();
-                    current_input = &current_input[find.len()..];
-                }
-                None => {
-                    prefix = current_input.chars().next().unwrap();
-                    output.push(prefix);
-                    current_input = &current_input[1..];
-                }
+            match matched_rule {
+                Some(rule) => rule.replace_with,
+                None => self.default_replacement,
             }
         }
     }

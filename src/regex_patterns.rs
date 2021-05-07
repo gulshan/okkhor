@@ -189,13 +189,36 @@ impl Parser {
     }
 
     pub fn convert_regex(&self, raw_input: &str) -> String {
-        let input: String = raw_input.to_ascii_lowercase().chars().filter(|&ch| !IGNORE.contains(ch)).collect();
+        const EXTRA: &str = "(্[যবম])?(্?)([ঃঁ]?)";
+
+        let input: String = raw_input
+            .to_ascii_lowercase()
+            .chars()
+            .filter(|&ch| !IGNORE.contains(ch))
+            .collect();
+
+        let mut prefix = ' ';
+        let mut input = &input[0..];
         let mut output = String::with_capacity(input.len() * 60);
 
         output.push('^');
-        self.convert_internal(&input, &mut output, "(্[যবম])?(্?)([ঃঁ]?)");
+        while !input.is_empty() {
+            match self.find_pattern(input) {
+                Some(pattern) => {
+                    output.push_str(pattern.get_replacement(input, prefix));
+                    output.push_str(EXTRA);
+                    prefix = pattern.find.chars().last().unwrap();
+                    input = &input[pattern.find.len()..];
+                }
+                None => {
+                    prefix = input.chars().next().unwrap();
+                    output.push(prefix);
+                    input = &input[1..];
+                }
+            }
+        }
         output.push('$');
-        
+
         output
     }
 }
