@@ -15,10 +15,7 @@ fn conditional_lowercase(c: char) -> char {
 }
 
 const fn is_vowel(c: char) -> bool {
-    match c {
-        'a' | 'e' | 'i' | 'o' | 'u' | 'A' | 'E' | 'I' | 'O' | 'U' => true,
-        _ => false,
-    }
+    matches!(c, 'a' | 'e' | 'i' | 'o' | 'u' | 'A' | 'E' | 'I' | 'O' | 'U')
 }
 
 const fn is_consonant(c: char) -> bool {
@@ -108,7 +105,7 @@ impl Pattern {
         } else {
             let suffix = input.chars().nth(self.find.len()).unwrap_or(' ');
 
-            let matched_rule = self.rules.into_iter().find(|rule| {
+            let matched_rule = self.rules.iter().find(|rule| {
                 rule.when_matches
                     .iter()
                     .all(|m| does_match(m, prefix, suffix))

@@ -9,8 +9,8 @@ use okkhor::parser::Parser;
 use rupantor::avro::AvroPhonetic;
 
 fn parse_benchmark(c: &mut Criterion) {
-    c.bench_function("okkhor new", |b| b.iter(|| Parser::new_phonetic()));
-    c.bench_function("rupantor new", |b| b.iter(|| AvroPhonetic::new()));
+    c.bench_function("okkhor new", |b| b.iter(Parser::new_phonetic));
+    c.bench_function("rupantor new", |b| b.iter(AvroPhonetic::new));
 
     let input1 = "ami";
     c.bench_function("okkhor ami", |b| {
