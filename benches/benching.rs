@@ -8,6 +8,9 @@ use criterion::Criterion;
 use okkhor::parser::Parser;
 use rupantor::avro::AvroPhonetic;
 
+#[cfg(feature = "regex")]
+mod regex;
+
 fn parse_benchmark(c: &mut Criterion) {
     c.bench_function("okkhor new", |b| b.iter(Parser::new_phonetic));
     c.bench_function("rupantor new", |b| b.iter(AvroPhonetic::new));
@@ -83,5 +86,47 @@ fn parse_benchmark(c: &mut Criterion) {
     });
 }
 
+#[cfg(feature = "regex")]
+fn parse_regex_benchmark(c: &mut Criterion) {
+    let input1 = "a";
+    c.bench_function("okkhor regex a", |b| {
+        let okkhor = Parser::new_regex();
+        b.iter(|| okkhor.convert_regex(black_box(input1)));
+    });
+    c.bench_function("riti regex a", |b| {
+        b.iter(|| regex::parse(black_box(input1)));
+    });
+
+    let input2 = "bistari";
+    c.bench_function("okkhor regex bistari", |b| {
+        let okkhor = Parser::new_regex();
+        b.iter(|| okkhor.convert_regex(black_box(input2)));
+    });
+    c.bench_function("riti regex bistari", |b| {
+        b.iter(|| regex::parse(black_box(input2)));
+    });
+
+    let input3 = "arO";
+    c.bench_function("okkhor regex arO", |b| {
+        let okkhor = Parser::new_regex();
+        b.iter(|| okkhor.convert_regex(black_box(input3)));
+    });
+    c.bench_function("riti regex arO", |b| {
+        b.iter(|| regex::parse(black_box(input3)));
+    });
+
+    let input4 = "kkhet";
+    c.bench_function("okkhor regex kkhet", |b| {
+        let okkhor = Parser::new_regex();
+        b.iter(|| okkhor.convert_regex(black_box(input4)));
+    });
+    c.bench_function("riti regex kkhet", |b| {
+        b.iter(|| regex::parse(black_box(input4)));
+    });
+}
+
+#[cfg(feature = "regex")]
+criterion_group!(benches, parse_benchmark, parse_regex_benchmark);
+#[cfg(not(feature = "regex"))]
 criterion_group!(benches, parse_benchmark);
 criterion_main!(benches);
