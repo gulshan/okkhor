@@ -65,12 +65,18 @@ impl Parser {
     }
 
     pub fn convert(&self, raw_input: &str) -> String {
+        let mut output = String::with_capacity(64);
+        self.convert_into(raw_input, &mut output);
+        output
+    }
+
+    pub fn convert_into(&self, raw_input: &str, output: &mut String) {
         let input: String = raw_input.chars().map(conditional_lowercase).collect();
 
         let mut prefix = ' ';
         let mut input = &input[0..];
-        let mut output = String::with_capacity(input.len() * 3);
 
+        output.clear();
         while !input.is_empty() {
             match self.find_pattern(input) {
                 Some(pattern) => {
@@ -85,8 +91,6 @@ impl Parser {
                 }
             }
         }
-
-        output
     }
 
     pub(crate) fn find_pattern(&self, input: &str) -> Option<&Pattern> {
