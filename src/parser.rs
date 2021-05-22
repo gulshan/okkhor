@@ -93,6 +93,7 @@ impl Parser {
         }
     }
 
+    #[inline]
     pub(crate) fn find_pattern(&self, input: &str) -> Option<&Pattern> {
         self.patterns
             .range(..=input)
@@ -103,6 +104,7 @@ impl Parser {
 }
 
 impl Pattern {
+    #[inline]
     pub(crate) fn get_replacement(&self, input: &str, prefix: char) -> &str {
         if self.rules.is_empty() {
             self.default_replacement
