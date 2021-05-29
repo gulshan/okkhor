@@ -13,6 +13,8 @@ mod regex;
 
 fn parse_benchmark(c: &mut Criterion) {
     c.bench_function("okkhor new", |b| b.iter(Parser::new_phonetic));
+
+    #[cfg(feature = "regex")]
     c.bench_function("rupantor new", |b| b.iter(AvroPhonetic::new));
 
     let input1 = "ami";
@@ -20,6 +22,8 @@ fn parse_benchmark(c: &mut Criterion) {
         let okkhor = Parser::new_phonetic();
         b.iter(|| okkhor.convert(black_box(input1)))
     });
+
+    #[cfg(feature = "regex")]
     c.bench_function("rupantor ami", |b| {
         let avro = AvroPhonetic::new();
         b.iter(|| avro.convert(black_box(input1)))
@@ -30,6 +34,8 @@ fn parse_benchmark(c: &mut Criterion) {
         let okkhor = Parser::new_phonetic();
         b.iter(|| okkhor.convert(black_box(input2)))
     });
+
+    #[cfg(feature = "regex")]
     c.bench_function("rupantor kormo", |b| {
         let avro = AvroPhonetic::new();
         b.iter(|| avro.convert(black_box(input2)))
@@ -40,6 +46,8 @@ fn parse_benchmark(c: &mut Criterion) {
         let okkhor = Parser::new_phonetic();
         b.iter(|| okkhor.convert(black_box(input3)))
     });
+
+    #[cfg(feature = "regex")]
     c.bench_function("rupantor bistarito", |b| {
         let avro = AvroPhonetic::new();
         b.iter(|| avro.convert(black_box(input3)))
@@ -50,6 +58,8 @@ fn parse_benchmark(c: &mut Criterion) {
         let okkhor = Parser::new_phonetic();
         b.iter(|| okkhor.convert(black_box(input4)))
     });
+
+    #[cfg(feature = "regex")]
     c.bench_function("rupantor long word", |b| {
         let avro = AvroPhonetic::new();
         b.iter(|| avro.convert(black_box(input4)))
@@ -60,6 +70,8 @@ fn parse_benchmark(c: &mut Criterion) {
         let okkhor = Parser::new_phonetic();
         b.iter(|| okkhor.convert(black_box(input5)))
     });
+
+    #[cfg(feature = "regex")]
     c.bench_function("rupantor sonar bangla", |b| {
         let avro = AvroPhonetic::new();
         b.iter(|| avro.convert(black_box(input5)))
@@ -70,6 +82,8 @@ fn parse_benchmark(c: &mut Criterion) {
         let okkhor = Parser::new_phonetic();
         b.iter(|| okkhor.convert(black_box(input6)))
     });
+
+    #[cfg(feature = "regex")]
     c.bench_function("rupantor sentence 1", |b| {
         let avro = AvroPhonetic::new();
         b.iter(|| avro.convert(black_box(input6)))
@@ -80,6 +94,8 @@ fn parse_benchmark(c: &mut Criterion) {
         let okkhor = Parser::new_phonetic();
         b.iter(|| okkhor.convert(black_box(input7)))
     });
+
+    #[cfg(feature = "regex")]
     c.bench_function("rupantor sentence 2", |b| {
         let avro = AvroPhonetic::new();
         b.iter(|| avro.convert(black_box(input7)))
@@ -162,7 +178,7 @@ fn parse_regex_benchmark(c: &mut Criterion) {
 }
 
 #[cfg(feature = "regex")]
-criterion_group!(benches, parse_benchmark, parse_regex_benchmark);
+criterion_group!(benches, parse_regex_benchmark);
 #[cfg(not(feature = "regex"))]
 criterion_group!(benches, parse_benchmark);
 criterion_main!(benches);
