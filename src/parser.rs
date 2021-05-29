@@ -27,23 +27,23 @@ const fn is_punctuation(c: char) -> bool {
 }
 
 const fn does_match(_match: &Match, prefix: char, suffix: char) -> bool {
-    match *_match {
+    match _match {
         PrefixIs(Vowel) => is_vowel(prefix),
         PrefixIsNot(Vowel) => !is_vowel(prefix),
         PrefixIs(Consonant) => is_consonant(prefix),
         PrefixIsNot(Consonant) => !is_consonant(prefix),
         PrefixIs(Punctuation) => is_punctuation(prefix),
         PrefixIsNot(Punctuation) => !is_punctuation(prefix),
-        PrefixIs(Char(c)) => (c == prefix),
-        PrefixIsNot(Char(c)) => (c != prefix),
+        PrefixIs(Char(c)) => (*c == prefix),
+        PrefixIsNot(Char(c)) => (*c != prefix),
         SuffixIs(Vowel) => is_vowel(suffix),
         SuffixIsNot(Vowel) => !is_vowel(suffix),
         SuffixIs(Consonant) => is_consonant(suffix),
         SuffixIsNot(Consonant) => !is_consonant(suffix),
         SuffixIs(Punctuation) => is_punctuation(suffix),
         SuffixIsNot(Punctuation) => !is_punctuation(suffix),
-        SuffixIs(Char(c)) => (c == suffix),
-        SuffixIsNot(Char(c)) => (c != suffix),
+        SuffixIs(Char(c)) => (*c == suffix),
+        SuffixIsNot(Char(c)) => (*c != suffix),
     }
 }
 
