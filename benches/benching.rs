@@ -93,8 +93,17 @@ fn parse_regex_benchmark(c: &mut Criterion) {
         let okkhor = Parser::new_regex();
         b.iter(|| okkhor.convert_regex(black_box(input1)));
     });
+    c.bench_function("okkhor regex a buf", |b| {
+        let okkhor = Parser::new_regex();
+        let mut buffer = String::with_capacity(512);
+        b.iter(|| okkhor.convert_regex_into(black_box(input1), &mut buffer));
+    });
     c.bench_function("riti regex a", |b| {
         b.iter(|| regex::parse(black_box(input1)));
+    });
+    c.bench_function("riti regex a buf", |b| {
+        let mut buffer = String::with_capacity(512);
+        b.iter(|| regex::parse_buf(black_box(input1), &mut buffer));
     });
 
     let input2 = "bistari";
@@ -102,8 +111,17 @@ fn parse_regex_benchmark(c: &mut Criterion) {
         let okkhor = Parser::new_regex();
         b.iter(|| okkhor.convert_regex(black_box(input2)));
     });
+    c.bench_function("okkhor regex bistari buf", |b| {
+        let okkhor = Parser::new_regex();
+        let mut buffer = String::with_capacity(512);
+        b.iter(|| okkhor.convert_regex_into(black_box(input2), &mut buffer));
+    });
     c.bench_function("riti regex bistari", |b| {
         b.iter(|| regex::parse(black_box(input2)));
+    });
+    c.bench_function("riti regex bistari buf", |b| {
+        let mut buffer = String::with_capacity(512);
+        b.iter(|| regex::parse_buf(black_box(input2), &mut buffer));
     });
 
     let input3 = "arO";
@@ -111,8 +129,17 @@ fn parse_regex_benchmark(c: &mut Criterion) {
         let okkhor = Parser::new_regex();
         b.iter(|| okkhor.convert_regex(black_box(input3)));
     });
+    c.bench_function("okkhor regex arO buf", |b| {
+        let okkhor = Parser::new_regex();
+        let mut buffer = String::with_capacity(512);
+        b.iter(|| okkhor.convert_regex_into(black_box(input3), &mut buffer));
+    });
     c.bench_function("riti regex arO", |b| {
         b.iter(|| regex::parse(black_box(input3)));
+    });
+    c.bench_function("riti regex arO buf", |b| {
+        let mut buffer = String::with_capacity(512);
+        b.iter(|| regex::parse_buf(black_box(input3), &mut buffer));
     });
 
     let input4 = "kkhet";
@@ -120,8 +147,17 @@ fn parse_regex_benchmark(c: &mut Criterion) {
         let okkhor = Parser::new_regex();
         b.iter(|| okkhor.convert_regex(black_box(input4)));
     });
+    c.bench_function("okkhor regex kkhet buf", |b| {
+        let okkhor = Parser::new_regex();
+        let mut buffer = String::with_capacity(512);
+        b.iter(|| okkhor.convert_regex_into(black_box(input4), &mut buffer));
+    });
     c.bench_function("riti regex kkhet", |b| {
         b.iter(|| regex::parse(black_box(input4)));
+    });
+    c.bench_function("riti regex kkhet buf", |b| {
+        let mut buffer = String::with_capacity(512);
+        b.iter(|| regex::parse_buf(black_box(input4), &mut buffer));
     });
 }
 

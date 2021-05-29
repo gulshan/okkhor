@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 #![allow(unused_assignments)]
 use std::cmp::Ordering;
 
@@ -6,12 +7,18 @@ mod patterns;
 
 use patterns::{Scope, Type, CONSONANT, IGNORE, MAX_PATTERN_LEN, PATTERNS, VOWELS};
 
+pub(crate) fn parse(input: &str) -> String { 
+    let mut output = String::with_capacity(input.len() * 60);
+    parse_buf(input, &mut output);
+    output
+}
+
 /// Parse `input` string containing phonetic text and return a regex string.
-pub(crate) fn parse(input: &str) -> String {
+pub(crate) fn parse_buf(input: &str, output: &mut String) {
     let fixed = clean_string(input);
     let len = fixed.len();
 
-    let mut output = String::with_capacity(len * 60);
+    output.clear();
     output.push('^'); // Regex beginning mark.
 
     let mut cur = 0;
@@ -106,8 +113,8 @@ pub(crate) fn parse(input: &str) -> String {
                                 }
 
                                 if replace {
-                                    output += rule.replace;
-                                    output += "(্[যবম])?(্?)([ঃঁ]?)";
+                                    output.push_str(rule.replace);
+                                    output.push_str("(্[যবম])?(্?)([ঃঁ]?)");
                                     cur = (end - 1) as usize;
                                     matched = true;
                                     break;
@@ -120,8 +127,8 @@ pub(crate) fn parse(input: &str) -> String {
                         }
 
                         // Default
-                        output += pattern.replace;
-                        output += "(্[যবম])?(্?)([ঃঁ]?)";
+                        output.push_str(pattern.replace);
+                        output.push_str("(্[যবম])?(্?)([ঃঁ]?)");
                         cur = (end - 1) as usize;
                         matched = true;
                         break;
@@ -140,13 +147,11 @@ pub(crate) fn parse(input: &str) -> String {
         }
 
         if !matched {
-            output += &fixed[cur..cur + 1];
+            output.push_str(&fixed[cur..cur + 1]);
         }
         cur += 1;
     }
     output.push('$'); // Regex end mark.
-
-    output
 }
 
 fn clean_string(string: &str) -> String {

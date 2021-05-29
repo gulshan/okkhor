@@ -189,6 +189,12 @@ impl Parser {
     }
 
     pub fn convert_regex(&self, raw_input: &str) -> String {
+        let mut output = String::with_capacity(512);
+        self.convert_regex_into(raw_input, &mut output);
+        output
+    }
+
+    pub fn convert_regex_into(&self, raw_input: &str, output: &mut String) {
         const EXTRA: &str = "(্[যবম])?(্?)([ঃঁ]?)";
 
         let input: String = raw_input
@@ -199,8 +205,8 @@ impl Parser {
 
         let mut prefix = ' ';
         let mut input = &input[0..];
-        let mut output = String::with_capacity(input.len() * 60);
 
+        output.clear();
         output.push('^');
         while !input.is_empty() {
             match self.find_pattern(input) {
@@ -218,7 +224,5 @@ impl Parser {
             }
         }
         output.push('$');
-
-        output
     }
 }
