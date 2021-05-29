@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 #![allow(unused_assignments)]
 use std::cmp::Ordering;
 
