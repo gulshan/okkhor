@@ -96,8 +96,7 @@ impl Parser {
     pub(crate) fn find_pattern(&self, input: &str) -> Option<&Pattern> {
         self.patterns
             .range(..=input)
-            .rev()
-            .find(|(&k, _)| input.starts_with(k))
+            .rfind(|(&k, _)| input.starts_with(k))
             .map(|(_, &p)| p)
     }
 }
