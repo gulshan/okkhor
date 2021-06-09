@@ -1,6 +1,6 @@
 [package]
 name = "okkhor"
-version = "0.5.0"
+version = "0.5.1"
 authors = ["Gulshanur Rahman<gulshanur@gmail.com>"]
 edition = "2018"
 repository = "https://github.com/gulshan/okkhor/"

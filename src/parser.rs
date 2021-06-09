@@ -15,7 +15,10 @@ fn conditional_lowercase(c: char) -> char {
 }
 
 const fn is_vowel(c: char) -> bool {
-    matches!(c, 'a' | 'e' | 'i' | 'o' | 'u' | 'A' | 'E' | 'I' | 'O' | 'U')
+    match c {
+        'a' | 'e' | 'i' | 'o' | 'u' | 'A' | 'E' | 'I' | 'O' | 'U' => true,
+        _ => false,
+    }
 }
 
 const fn is_consonant(c: char) -> bool {
@@ -26,7 +29,7 @@ const fn is_punctuation(c: char) -> bool {
     !c.is_ascii_alphabetic()
 }
 
-const fn does_match(_match: &Match, prefix: char, suffix: char) -> bool {
+fn does_match(_match: &Match, prefix: char, suffix: char) -> bool {
     match _match {
         PrefixIs(Vowel) => is_vowel(prefix),
         PrefixIsNot(Vowel) => !is_vowel(prefix),
