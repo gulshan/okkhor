@@ -25,7 +25,7 @@ fn is_consonant(c: char) -> bool {
     !is_vowel(c) && c.is_ascii_alphabetic()
 }
 
-const fn is_punctuation(c: char) -> bool {
+fn is_punctuation(c: char) -> bool {
     !c.is_ascii_alphabetic()
 }
 

@@ -23,11 +23,13 @@ pub(crate) struct Pattern {
     pub default_replacement: &'static str,
 }
 
+const NO_RULES: &[Rule] = &[];
+
 impl Pattern {
     pub const fn simple_replace(find: &'static str, replace: &'static str) -> Pattern {
         Pattern {
             find,
-            rules: &[],
+            rules: NO_RULES,
             default_replacement: replace,
         }
     }
