@@ -14,14 +14,14 @@ fn conditional_lowercase(c: char) -> char {
     }
 }
 
-const fn is_vowel(c: char) -> bool {
+fn is_vowel(c: char) -> bool {
     match c {
         'a' | 'e' | 'i' | 'o' | 'u' | 'A' | 'E' | 'I' | 'O' | 'U' => true,
         _ => false,
     }
 }
 
-const fn is_consonant(c: char) -> bool {
+fn is_consonant(c: char) -> bool {
     !is_vowel(c) && c.is_ascii_alphabetic()
 }
 
