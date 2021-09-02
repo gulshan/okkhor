@@ -37,6 +37,8 @@ fn does_match(_match: &Match, prefix: char, suffix: char) -> bool {
         PrefixIsNot(Consonant) => !is_consonant(prefix),
         PrefixIs(Punctuation) => is_punctuation(prefix),
         PrefixIsNot(Punctuation) => !is_punctuation(prefix),
+        PrefixIs(Number) => prefix.is_ascii_digit(),
+        PrefixIsNot(Number) => !prefix.is_ascii_digit(),
         PrefixIs(Char(c)) => (*c == prefix),
         PrefixIsNot(Char(c)) => (*c != prefix),
         SuffixIs(Vowel) => is_vowel(suffix),
@@ -45,6 +47,8 @@ fn does_match(_match: &Match, prefix: char, suffix: char) -> bool {
         SuffixIsNot(Consonant) => !is_consonant(suffix),
         SuffixIs(Punctuation) => is_punctuation(suffix),
         SuffixIsNot(Punctuation) => !is_punctuation(suffix),
+        SuffixIs(Number) => suffix.is_ascii_digit(),
+        SuffixIsNot(Number) => !suffix.is_ascii_digit(),
         SuffixIs(Char(c)) => (*c == suffix),
         SuffixIsNot(Char(c)) => (*c != suffix),
     }

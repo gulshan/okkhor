@@ -34,7 +34,16 @@ pub(crate) const PHONETIC_PATTERNS: &[Pattern] = &[
     Pattern::simple_replace("...", "..."),
     Pattern::simple_replace(".`", "."),
     Pattern::simple_replace("..", "।।"),
-    Pattern::simple_replace(".", "।"),
+    Pattern {
+        find: ".",
+        default_replacement: "।",
+        rules: &[
+            Rule {
+                when_matches: &[SuffixIs(Number)],
+                replace_with: ".",
+            },
+        ],
+    },
     Pattern::simple_replace("ghn", "ঘ্ন"),
     Pattern::simple_replace("Ghn", "ঘ্ন"),
     Pattern::simple_replace("gdh", "গ্ধ"),

@@ -54,6 +54,9 @@ fn basic_test2() {
     assert_eq!(".", p.convert(".`"));
     assert_eq!("।।", p.convert(".."));
     assert_eq!("।", p.convert("."));
+    assert_eq!("১।", p.convert("1."));
+    assert_eq!("১.৫", p.convert("1.5"));
+    assert_eq!("১।এক", p.convert("1.ek"));
     assert_eq!("ঘ্ন", p.convert("ghn"));
     assert_eq!("ঘ্ন", p.convert("Ghn"));
     assert_eq!("গ্ধ", p.convert("gdh"));
