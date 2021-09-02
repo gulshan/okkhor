@@ -13,6 +13,12 @@ pub struct EditorResult {
     pub replace_len: usize,
 }
 
+impl Default for PhoneticEditor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl PhoneticEditor {
     pub fn new() -> PhoneticEditor {
         PhoneticEditor {

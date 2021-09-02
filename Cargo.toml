@@ -1,6 +1,6 @@
 [package]
 name = "okkhor"
-version = "0.5.1"
+version = "0.5.2"
 authors = ["Gulshanur Rahman<gulshanur@gmail.com>"]
 edition = "2018"
 repository = "https://github.com/gulshan/okkhor/"
@@ -15,7 +15,7 @@ regex = []
 bench = false
 
 [dev-dependencies]
-criterion = "0.3.4"
+criterion = "0.3"
 rupantor = "0.3"
 
 [[bench]]
