@@ -2,6 +2,7 @@ pub(crate) enum MatchType {
     Vowel,
     Consonant,
     Punctuation,
+    Number,
     Char(char),
 }
 
