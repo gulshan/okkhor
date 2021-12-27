@@ -3,6 +3,7 @@ name = "okkhor"
 version = "0.5.2"
 authors = ["Gulshanur Rahman<gulshanur@gmail.com>"]
 edition = "2018"
+rust-version = "1.44.1"
 repository = "https://github.com/gulshan/okkhor/"
 license = "MIT"
 description = "A Rust library for English to Bangla phonetic conversion following the 'Avro' rules"
