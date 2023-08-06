@@ -1,9 +1,9 @@
 [package]
 name = "okkhor"
-version = "0.5.2"
+version = "0.6.0"
 authors = ["Gulshanur Rahman<gulshanur@gmail.com>"]
-edition = "2018"
-rust-version = "1.44.1"
+edition = "2021"
+rust-version = "1.63.0"
 repository = "https://github.com/gulshan/okkhor/"
 license = "MIT"
 description = "A Rust library for English to Bangla phonetic conversion following the 'Avro' rules"
@@ -16,7 +16,7 @@ regex = []
 bench = false
 
 [dev-dependencies]
-criterion = "0.3"
+criterion = "0.5"
 rupantor = "0.3"
 
 [[bench]]

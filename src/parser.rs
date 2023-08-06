@@ -4,32 +4,31 @@ use crate::{
 };
 use std::collections::BTreeMap;
 
-fn conditional_lowercase(c: char) -> char {
-    const CASE_SENSITIVE_CHARS: &str = "oiudgjnrstyz";
+const fn conditional_lowercase(c: char) -> char {
     let lowercase_c = c.to_ascii_lowercase();
-    if CASE_SENSITIVE_CHARS.contains(lowercase_c) {
+    if matches!(
+        lowercase_c,
+        'o' | 'i' | 'u' | 'd' | 'g' | 'j' | 'n' | 'r' | 's' | 't' | 'y' | 'z'
+    ) {
         c
     } else {
         lowercase_c
     }
 }
 
-fn is_vowel(c: char) -> bool {
-    match c {
-        'a' | 'e' | 'i' | 'o' | 'u' | 'A' | 'E' | 'I' | 'O' | 'U' => true,
-        _ => false,
-    }
+const fn is_vowel(c: char) -> bool {
+    matches!(c, 'a' | 'e' | 'i' | 'o' | 'u' | 'A' | 'E' | 'I' | 'O' | 'U')
 }
 
-fn is_consonant(c: char) -> bool {
+const fn is_consonant(c: char) -> bool {
     !is_vowel(c) && c.is_ascii_alphabetic()
 }
 
-fn is_punctuation(c: char) -> bool {
+const fn is_punctuation(c: char) -> bool {
     !c.is_ascii_alphabetic()
 }
 
-fn does_match(_match: &Match, prefix: char, suffix: char) -> bool {
+const fn does_match(_match: &Match, prefix: char, suffix: char) -> bool {
     match _match {
         PrefixIs(Vowel) => is_vowel(prefix),
         PrefixIsNot(Vowel) => !is_vowel(prefix),
@@ -39,8 +38,8 @@ fn does_match(_match: &Match, prefix: char, suffix: char) -> bool {
         PrefixIsNot(Punctuation) => !is_punctuation(prefix),
         PrefixIs(Number) => prefix.is_ascii_digit(),
         PrefixIsNot(Number) => !prefix.is_ascii_digit(),
-        PrefixIs(Char(c)) => (*c == prefix),
-        PrefixIsNot(Char(c)) => (*c != prefix),
+        PrefixIs(Char(c)) => *c == prefix,
+        PrefixIsNot(Char(c)) => *c != prefix,
         SuffixIs(Vowel) => is_vowel(suffix),
         SuffixIsNot(Vowel) => !is_vowel(suffix),
         SuffixIs(Consonant) => is_consonant(suffix),
@@ -49,8 +48,8 @@ fn does_match(_match: &Match, prefix: char, suffix: char) -> bool {
         SuffixIsNot(Punctuation) => !is_punctuation(suffix),
         SuffixIs(Number) => suffix.is_ascii_digit(),
         SuffixIsNot(Number) => !suffix.is_ascii_digit(),
-        SuffixIs(Char(c)) => (*c == suffix),
-        SuffixIsNot(Char(c)) => (*c != suffix),
+        SuffixIs(Char(c)) => *c == suffix,
+        SuffixIsNot(Char(c)) => *c != suffix,
     }
 }
 

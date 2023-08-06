@@ -6,6 +6,8 @@ extern crate rupantor;
 use criterion::black_box;
 use criterion::Criterion;
 use okkhor::parser::Parser;
+
+#[cfg(feature = "regex")]
 use rupantor::avro::AvroPhonetic;
 
 #[cfg(feature = "regex")]

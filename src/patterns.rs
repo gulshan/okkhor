@@ -37,12 +37,10 @@ pub(crate) const PHONETIC_PATTERNS: &[Pattern] = &[
     Pattern {
         find: ".",
         default_replacement: "।",
-        rules: &[
-            Rule {
-                when_matches: &[SuffixIs(Number)],
-                replace_with: ".",
-            },
-        ],
+        rules: &[Rule {
+            when_matches: &[SuffixIs(Number)],
+            replace_with: ".",
+        }],
     },
     Pattern::simple_replace("ghn", "ঘ্ন"),
     Pattern::simple_replace("Ghn", "ঘ্ন"),
