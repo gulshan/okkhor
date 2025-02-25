@@ -1,6 +1,6 @@
 use crate::{
     models::{Match::*, MatchType::*, Pattern, Rule},
-    parser::Parser,
+    parser::{get_replacement, Parser},
 };
 
 pub(crate) const REGEX_PATTERNS: &[Pattern] = &[
@@ -181,8 +181,6 @@ pub(crate) const REGEX_PATTERNS: &[Pattern] = &[
     Pattern::simple_replace("z", "(জ|য|(জ়)|([‌‍]?্য))"),
 ];
 
-const IGNORE: &str = "|()[]{}^$*+?.~!@#%&-_='\";<>/\\,:`";
-
 impl Parser {
     pub fn new_regex() -> Parser {
         Self::new(REGEX_PATTERNS)
@@ -198,9 +196,14 @@ impl Parser {
         const EXTRA: &str = "(্[যবম])?(্?)([ঃঁ]?)";
 
         let input: String = raw_input
-            .to_ascii_lowercase()
             .chars()
-            .filter(|&ch| !IGNORE.contains(ch))
+            .filter_map(|ch| {
+                if ch.is_ascii_punctuation() {
+                    None
+                } else {
+                    Some(ch.to_ascii_lowercase())
+                }
+            })
             .collect();
 
         let mut prefix = ' ';
@@ -211,7 +214,8 @@ impl Parser {
         while !input.is_empty() {
             match self.find_pattern(input) {
                 Some(pattern) => {
-                    output.push_str(pattern.get_replacement(input, prefix));
+                    let suffix = input.chars().nth(pattern.find.len()).unwrap_or(' ');
+                    output.push_str(get_replacement(pattern, prefix, suffix));
                     output.push_str(EXTRA);
                     prefix = pattern.find.chars().last().unwrap();
                     input = &input[pattern.find.len()..];

@@ -53,6 +53,18 @@ const fn does_match(_match: &Match, prefix: char, suffix: char) -> bool {
     }
 }
 
+pub(crate) fn get_replacement(pattern: &Pattern, prefix: char, suffix: char) -> &'static str {
+    pattern
+        .rules
+        .iter()
+        .find(|rule| {
+            rule.when_matches
+                .iter()
+                .all(|m| does_match(m, prefix, suffix))
+        })
+        .map_or(pattern.default_replacement, |rule| rule.replace_with)
+}
+
 pub struct Parser {
     patterns: BTreeMap<&'static str, &'static Pattern>,
 }
@@ -86,7 +98,8 @@ impl Parser {
         while !input.is_empty() {
             match self.find_pattern(input) {
                 Some(pattern) => {
-                    output.push_str(pattern.get_replacement(input, prefix));
+                    let suffix = input.chars().nth(pattern.find.len()).unwrap_or(' ');
+                    output.push_str(get_replacement(pattern, prefix, suffix));
                     prefix = pattern.find.chars().last().unwrap();
                     input = &input[pattern.find.len()..];
                 }
@@ -104,26 +117,5 @@ impl Parser {
             .range(..=input)
             .rfind(|(&k, _)| input.starts_with(k))
             .map(|(_, &p)| p)
-    }
-}
-
-impl Pattern {
-    pub(crate) fn get_replacement(&self, input: &str, prefix: char) -> &str {
-        if self.rules.is_empty() {
-            self.default_replacement
-        } else {
-            let suffix = input.chars().nth(self.find.len()).unwrap_or(' ');
-
-            let matched_rule = self.rules.iter().find(|rule| {
-                rule.when_matches
-                    .iter()
-                    .all(|m| does_match(m, prefix, suffix))
-            });
-
-            match matched_rule {
-                Some(rule) => rule.replace_with,
-                None => self.default_replacement,
-            }
-        }
     }
 }

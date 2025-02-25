@@ -7,12 +7,13 @@ use criterion::black_box;
 use criterion::Criterion;
 use okkhor::parser::Parser;
 
-#[cfg(feature = "regex")]
+#[cfg(not(feature = "regex"))]
 use rupantor::avro::AvroPhonetic;
 
 #[cfg(feature = "regex")]
 mod regex;
 
+#[cfg(not(feature = "regex"))]
 fn parse_benchmark(c: &mut Criterion) {
     c.bench_function("okkhor new", |b| b.iter(Parser::new_phonetic));
 
