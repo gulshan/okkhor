@@ -1,3 +1,4 @@
+#[derive(Clone)]
 pub(crate) enum MatchType {
     Vowel,
     Consonant,
@@ -6,6 +7,7 @@ pub(crate) enum MatchType {
     Char(char),
 }
 
+#[derive(Clone)]
 pub(crate) enum Match {
     PrefixIs(MatchType),
     SuffixIs(MatchType),

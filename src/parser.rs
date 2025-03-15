@@ -28,7 +28,7 @@ const fn is_punctuation(c: char) -> bool {
     !c.is_ascii_alphabetic()
 }
 
-const fn does_match(_match: &Match, prefix: char, suffix: char) -> bool {
+const fn does_match(_match: Match, prefix: char, suffix: char) -> bool {
     match _match {
         PrefixIs(Vowel) => is_vowel(prefix),
         PrefixIsNot(Vowel) => !is_vowel(prefix),
@@ -38,8 +38,8 @@ const fn does_match(_match: &Match, prefix: char, suffix: char) -> bool {
         PrefixIsNot(Punctuation) => !is_punctuation(prefix),
         PrefixIs(Number) => prefix.is_ascii_digit(),
         PrefixIsNot(Number) => !prefix.is_ascii_digit(),
-        PrefixIs(Char(c)) => *c == prefix,
-        PrefixIsNot(Char(c)) => *c != prefix,
+        PrefixIs(Char(c)) => c == prefix,
+        PrefixIsNot(Char(c)) => c != prefix,
         SuffixIs(Vowel) => is_vowel(suffix),
         SuffixIsNot(Vowel) => !is_vowel(suffix),
         SuffixIs(Consonant) => is_consonant(suffix),
@@ -48,8 +48,8 @@ const fn does_match(_match: &Match, prefix: char, suffix: char) -> bool {
         SuffixIsNot(Punctuation) => !is_punctuation(suffix),
         SuffixIs(Number) => suffix.is_ascii_digit(),
         SuffixIsNot(Number) => !suffix.is_ascii_digit(),
-        SuffixIs(Char(c)) => *c == suffix,
-        SuffixIsNot(Char(c)) => *c != suffix,
+        SuffixIs(Char(c)) => c == suffix,
+        SuffixIsNot(Char(c)) => c != suffix,
     }
 }
 
@@ -60,7 +60,7 @@ pub(crate) fn get_replacement(pattern: &Pattern, prefix: char, suffix: char) -> 
         .find(|rule| {
             rule.when_matches
                 .iter()
-                .all(|m| does_match(m, prefix, suffix))
+                .all(|m| does_match(m.clone(), prefix, suffix))
         })
         .map_or(pattern.default_replacement, |rule| rule.replace_with)
 }
