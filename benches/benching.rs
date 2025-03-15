@@ -7,7 +7,7 @@ use criterion::black_box;
 use criterion::Criterion;
 use okkhor::parser::Parser;
 
-#[cfg(not(feature = "regex"))]
+#[cfg(feature = "rupantor_bench")]
 use rupantor::avro::AvroPhonetic;
 
 #[cfg(feature = "regex")]
@@ -17,7 +17,7 @@ mod regex;
 fn parse_benchmark(c: &mut Criterion) {
     c.bench_function("okkhor new", |b| b.iter(Parser::new_phonetic));
 
-    #[cfg(feature = "regex")]
+    #[cfg(feature = "rupantor_bench")]
     c.bench_function("rupantor new", |b| b.iter(AvroPhonetic::new));
 
     let input1 = "ami";
@@ -26,7 +26,7 @@ fn parse_benchmark(c: &mut Criterion) {
         b.iter(|| okkhor.convert(black_box(input1)))
     });
 
-    #[cfg(feature = "regex")]
+    #[cfg(feature = "rupantor_bench")]
     c.bench_function("rupantor ami", |b| {
         let avro = AvroPhonetic::new();
         b.iter(|| avro.convert(black_box(input1)))
@@ -38,7 +38,7 @@ fn parse_benchmark(c: &mut Criterion) {
         b.iter(|| okkhor.convert(black_box(input2)))
     });
 
-    #[cfg(feature = "regex")]
+    #[cfg(feature = "rupantor_bench")]
     c.bench_function("rupantor kormo", |b| {
         let avro = AvroPhonetic::new();
         b.iter(|| avro.convert(black_box(input2)))
@@ -50,7 +50,7 @@ fn parse_benchmark(c: &mut Criterion) {
         b.iter(|| okkhor.convert(black_box(input3)))
     });
 
-    #[cfg(feature = "regex")]
+    #[cfg(feature = "rupantor_bench")]
     c.bench_function("rupantor bistarito", |b| {
         let avro = AvroPhonetic::new();
         b.iter(|| avro.convert(black_box(input3)))
@@ -62,7 +62,7 @@ fn parse_benchmark(c: &mut Criterion) {
         b.iter(|| okkhor.convert(black_box(input4)))
     });
 
-    #[cfg(feature = "regex")]
+    #[cfg(feature = "rupantor_bench")]
     c.bench_function("rupantor long word", |b| {
         let avro = AvroPhonetic::new();
         b.iter(|| avro.convert(black_box(input4)))
@@ -74,7 +74,7 @@ fn parse_benchmark(c: &mut Criterion) {
         b.iter(|| okkhor.convert(black_box(input5)))
     });
 
-    #[cfg(feature = "regex")]
+    #[cfg(feature = "rupantor_bench")]
     c.bench_function("rupantor sonar bangla", |b| {
         let avro = AvroPhonetic::new();
         b.iter(|| avro.convert(black_box(input5)))
@@ -86,7 +86,7 @@ fn parse_benchmark(c: &mut Criterion) {
         b.iter(|| okkhor.convert(black_box(input6)))
     });
 
-    #[cfg(feature = "regex")]
+    #[cfg(feature = "rupantor_bench")]
     c.bench_function("rupantor sentence 1", |b| {
         let avro = AvroPhonetic::new();
         b.iter(|| avro.convert(black_box(input6)))
@@ -98,7 +98,7 @@ fn parse_benchmark(c: &mut Criterion) {
         b.iter(|| okkhor.convert(black_box(input7)))
     });
 
-    #[cfg(feature = "regex")]
+    #[cfg(feature = "rupantor_bench")]
     c.bench_function("rupantor sentence 2", |b| {
         let avro = AvroPhonetic::new();
         b.iter(|| avro.convert(black_box(input7)))
