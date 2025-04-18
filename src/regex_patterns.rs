@@ -197,13 +197,8 @@ impl Parser {
 
         let input: String = raw_input
             .chars()
-            .filter_map(|ch| {
-                if ch.is_ascii_punctuation() {
-                    None
-                } else {
-                    Some(ch.to_ascii_lowercase())
-                }
-            })
+            .filter(|c| !c.is_ascii_punctuation())
+            .map(char::to_ascii_lowercase)
             .collect();
 
         let mut prefix = ' ';
