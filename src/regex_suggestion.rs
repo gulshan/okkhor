@@ -1,6 +1,6 @@
 use crate::{
-    models::{Match::*, MatchType::*, Pattern, Rule},
-    parser::{get_replacement, Parser},
+    models::{Match::*, MatchType::*, Pattern, Patterns, Rule},
+    parser::get_replacement,
 };
 
 pub(crate) const REGEX_PATTERNS: &[Pattern] = &[
@@ -181,9 +181,15 @@ pub(crate) const REGEX_PATTERNS: &[Pattern] = &[
     Pattern::simple_replace("z", "(জ|য|(জ়)|([‌‍]?্য))"),
 ];
 
-impl Parser {
-    pub fn new_regex() -> Parser {
-        Self::new(REGEX_PATTERNS)
+pub struct RegexSuggestion {
+    pub(crate) patterns: Patterns,
+}
+
+impl RegexSuggestion {
+    pub fn new() -> Self {
+        Self {
+            patterns: Patterns::new(REGEX_PATTERNS),
+        }
     }
 
     pub fn convert_regex(&self, raw_input: &str) -> String {
@@ -197,13 +203,8 @@ impl Parser {
 
         let input: String = raw_input
             .chars()
-            .filter_map(|ch| {
-                if ch.is_ascii_punctuation() {
-                    None
-                } else {
-                    Some(ch.to_ascii_lowercase())
-                }
-            })
+            .filter(|c| !c.is_ascii_punctuation())
+            .map(|c| c.to_ascii_lowercase())
             .collect();
 
         let mut prefix = ' ';
@@ -212,7 +213,7 @@ impl Parser {
         output.clear();
         output.push('^');
         while !input.is_empty() {
-            match self.find_pattern(input) {
+            match self.patterns.find_pattern(input) {
                 Some(pattern) => {
                     let suffix = input.chars().nth(pattern.find.len()).unwrap_or(' ');
                     output.push_str(get_replacement(pattern, prefix, suffix));

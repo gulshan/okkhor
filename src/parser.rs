@@ -1,8 +1,11 @@
 use crate::{
-    models::{Match, Match::*, MatchType::*, Pattern},
+    models::{
+        Match::{self, *},
+        MatchType::*,
+        Pattern, Patterns,
+    },
     patterns::PHONETIC_PATTERNS,
 };
-use std::collections::BTreeMap;
 
 const fn conditional_lowercase(c: char) -> char {
     let lowercase_c = c.to_ascii_lowercase();
@@ -66,20 +69,14 @@ pub(crate) fn get_replacement(pattern: &Pattern, prefix: char, suffix: char) -> 
 }
 
 pub struct Parser {
-    patterns: BTreeMap<&'static str, &'static Pattern>,
+    pub(crate) patterns: Patterns,
 }
 
 impl Parser {
-    pub fn new_phonetic() -> Parser {
-        Self::new(PHONETIC_PATTERNS)
-    }
-
-    pub(crate) fn new(patterns_input: &'static [Pattern]) -> Parser {
-        let patterns = patterns_input
-            .iter()
-            .map(|p| (p.find, p))
-            .collect::<BTreeMap<_, _>>();
-        Parser { patterns }
+    pub fn new_phonetic() -> Self {
+        Self {
+            patterns: Patterns::new(PHONETIC_PATTERNS),
+        }
     }
 
     pub fn convert(&self, raw_input: &str) -> String {
@@ -96,7 +93,7 @@ impl Parser {
 
         output.clear();
         while !input.is_empty() {
-            match self.find_pattern(input) {
+            match self.patterns.find_pattern(input) {
                 Some(pattern) => {
                     let suffix = input.chars().nth(pattern.find.len()).unwrap_or(' ');
                     output.push_str(get_replacement(pattern, prefix, suffix));
@@ -110,12 +107,5 @@ impl Parser {
                 }
             }
         }
-    }
-
-    pub(crate) fn find_pattern(&self, input: &str) -> Option<&Pattern> {
-        self.patterns
-            .range(..=input)
-            .rfind(|(&k, _)| input.starts_with(k))
-            .map(|(_, &p)| p)
     }
 }
