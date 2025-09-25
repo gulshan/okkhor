@@ -34,7 +34,6 @@ const SHOR_PHONETIC_PATTERNS: &[Pattern] = &[
     Pattern::simple_replace("wae", "ওয়্যা"),
     Pattern::simple_replace("we", "ওয়ে"),
     Pattern::simple_replace("fwe", "োয়ে"),
-
     Pattern::simple_replace("ngo", "ঙ"),
     Pattern::simple_replace("nga", "ঙা"),
     Pattern::simple_replace("ngi", "ঙি"),
@@ -359,7 +358,6 @@ const JUKTOBORNO_PHONETIC_PATTERNS: &[Pattern] = &[
     Pattern::simple_replace("hz", "হ্য"),
     Pattern::simple_replace("hr", "হ্র"),
     Pattern::simple_replace("hl", "হ্ল"),
-
     // oshomvob juktoborno
     Pattern::simple_replace("ksh", "কশ"),
     Pattern::simple_replace("nsh", "নশ"),
@@ -742,22 +740,36 @@ impl KhiproPhonetic {
 
         output.clear();
         while !input.is_empty() {
-            let mut matched = false;
+            let mut match_len = 0;
+            let mut replacement = "";
+            let mut join_char = false;
+            let mut next_state = State::Init;
+
             for group in state.groups().iter() {
                 if let Some(patterns) = self.groups.get(group) {
                     if let Some(pattern) = patterns.find_pattern(input) {
-                        if state == State::Byanjon && *group == Group::Phola {
-                            output.push('্');
+                        if pattern.find.len() > match_len {
+                            join_char = if state == State::Byanjon && *group == Group::Phola {
+                                true
+                            } else {
+                                false
+                            };
+                            match_len = pattern.find.len();
+                            replacement = pattern.default_replacement;
+                            next_state = state.next_state(group);
                         }
-                        output.push_str(pattern.default_replacement);
-                        input = &input[pattern.find.len()..];
-                        state = state.next_state(group);
-                        matched = true;
-                        break;
                     }
                 }
             }
-            if !matched {
+
+            if match_len > 0 {
+                if join_char {
+                    output.push('্');
+                }
+                output.push_str(replacement);
+                input = &input[match_len..];
+                state = next_state;
+            } else {
                 output.push(input.chars().next().unwrap());
                 input = &input[1..];
                 state = State::Init;
@@ -770,8 +782,149 @@ impl KhiproPhonetic {
 mod tests {
     use super::*;
 
+    // স্বরবর্ণ ও স্বরচিহ্ন
     #[test]
-    fn test_sentences_khipro() {
+    fn test_khipro_words1() {
+        let p = KhiproPhonetic::new();
+        assert_eq!(p.convert("omor"), "অমর");
+        assert_eq!(p.convert("amar"), "আমার");
+        assert_eq!(p.convert("kaka"), "কাকা");
+        assert_eq!(p.convert("iti"), "ইতি");
+        assert_eq!(p.convert("ki"), "কি");
+        assert_eq!(p.convert("iid"), "ঈদ");
+        assert_eq!(p.convert("kii"), "কী");
+        assert_eq!(p.convert("ui"), "উই");
+        assert_eq!(p.convert("oju"), "অজু");
+        assert_eq!(p.convert("uuru"), "ঊরু");
+        assert_eq!(p.convert("kuup"), "কূপ");
+        assert_eq!(p.convert("qju"), "ঋজু");
+        assert_eq!(p.convert("kqtii"), "কৃতী");
+        assert_eq!(p.convert("ebar"), "এবার");
+        assert_eq!(p.convert("ke"), "কে");
+        assert_eq!(p.convert("oik"), "ঐক");
+        assert_eq!(p.convert("koi"), "কৈ");
+        assert_eq!(p.convert("wstad"), "ওস্তাদ");
+        assert_eq!(p.convert("kwn"), "কোন");
+        assert_eq!(p.convert("oucitz"), "ঔচিত্য");
+        assert_eq!(p.convert("nou"), "নৌ");
+        assert_eq!(p.convert("aep"), "অ্যাপ");
+        assert_eq!(p.convert("maep"), "ম্যাপ");
+        assert_eq!(p.convert("hwatfsaefp"), "হোয়াটসঅ্যাপ");
+        assert_eq!(p.convert("watfar"), "ওয়াটার");
+        assert_eq!(p.convert("dhwa"), "ধোয়া");
+        assert_eq!(p.convert("wedar"), "ওয়েদার");
+        assert_eq!(p.convert("swetfar"), "সোয়েটার");
+        assert_eq!(p.convert("harrdfwaer"), "হার্ডওয়্যার");
+    }
+
+    // স্বরবর্ণ ও স্বরচিহ্ন টিপ্‌স
+    #[test]
+    fn test_khipro_words2() {
+        let p = KhiproPhonetic::new();
+        assert_eq!(p.convert("kol"), "কল");
+        assert_eq!(p.convert("oto"), "অত");
+        assert_eq!(p.convert("am;ar"), "আমআর");
+        assert_eq!(p.convert("chok;ka"), "ছককা");
+        assert_eq!(p.convert("far"), "ার");
+        assert_eq!(p.convert("boif"), "বই");
+        assert_eq!(p.convert("bouf"), "বউ");
+        assert_eq!(p.convert("bif"), "বই");
+        assert_eq!(p.convert("ruup"), "রূপ");
+        assert_eq!(p.convert("ruuffp"), "র‌ূপ");
+    }
+
+    // ব্যঞ্জনবর্ণ
+    #[test]
+    fn test_khipro_words3() {
+        let p = KhiproPhonetic::new();
+        assert_eq!(p.convert("kolom"), "কলম");
+        assert_eq!(p.convert("k;l;m"), "কলম");
+        assert_eq!(p.convert("khata"), "খাতা");
+        assert_eq!(p.convert("garfi"), "গাড়ি");
+        assert_eq!(p.convert("ghor"), "ঘর");
+        assert_eq!(p.convert("gh;r"), "ঘর");
+        assert_eq!(p.convert("rongo"), "রঙ");
+        assert_eq!(p.convert("ranga"), "রাঙা");
+        assert_eq!(p.convert("rangga"), "রাঙ্গা");
+        assert_eq!(p.convert("ongk"), "অঙ্ক");
+        assert_eq!(p.convert("ongfk"), "অংক");
+        assert_eq!(p.convert("ca"), "চা");
+        assert_eq!(p.convert("chata"), "ছাতা");
+        assert_eq!(p.convert("jadughor"), "জাদুঘর");
+        assert_eq!(p.convert("jhorf"), "ঝড়");
+        assert_eq!(p.convert("minffa"), "মিঞা");
+        assert_eq!(p.convert("jhonjha"), "ঝঞ্ঝা");
+        assert_eq!(p.convert("tfaka"), "টাকা");
+        assert_eq!(p.convert("ottf"), "অট্ট");
+        assert_eq!(p.convert("tffandfa"), "ঠান্ডা");
+        assert_eq!(p.convert("tfhandfa"), "ঠান্ডা");
+        assert_eq!(p.convert("odfitf"), "অডিট");
+        assert_eq!(p.convert("addfa"), "আড্ডা");
+        assert_eq!(p.convert("dffaka"), "ঢাকা");
+        assert_eq!(p.convert("dfhaka"), "ঢাকা");
+        assert_eq!(p.convert("boronf"), "বরণ");
+        assert_eq!(p.convert("tumi"), "তুমি");
+        assert_eq!(p.convert("twmar"), "তোমার");
+        assert_eq!(p.convert("thaka"), "থাকা");
+        assert_eq!(p.convert("d;i"), "দই");
+        assert_eq!(p.convert("dif"), "দই");
+        assert_eq!(p.convert("dhakka"), "ধাক্কা");
+        assert_eq!(p.convert("dhbni"), "ধ্বনি");
+        assert_eq!(p.convert("nombor"), "নম্বর");
+        assert_eq!(p.convert("n;mb;r"), "নম্বর");
+        assert_eq!(p.convert("pakhi"), "পাখি");
+        assert_eq!(p.convert("phol"), "ফল");
+        assert_eq!(p.convert("barfi"), "বাড়ি");
+        assert_eq!(p.convert("vorpur"), "ভরপুর");
+        assert_eq!(p.convert("matfi"), "মাটি");
+        assert_eq!(p.convert("zokhon"), "যখন");
+        assert_eq!(p.convert("zkhn"), "যখন");
+        assert_eq!(p.convert("rong"), "রং");
+        assert_eq!(p.convert("lav"), "লাভ");
+        assert_eq!(p.convert("shobd"), "শব্দ");
+        assert_eq!(p.convert("susfom"), "সুষম");
+        assert_eq!(p.convert("sob"), "সব");
+        assert_eq!(p.convert("hawa"), "হাওয়া");
+        assert_eq!(p.convert("upay"), "উপায়");
+        assert_eq!(p.convert("jwrfa"), "জোড়া");
+        assert_eq!(p.convert("asfarff"), "আষাঢ়");
+    }
+
+    // বিশেষ কিছু যুক্তবর্ণ এবং বিবিধ
+    #[test]
+    fn test_khipro_words4() {
+        let p = KhiproPhonetic::new();
+        assert_eq!(p.convert("gorrb"), "গর্ব");
+        assert_eq!(p.convert("porrzay"), "পর্যায়");
+        assert_eq!(p.convert("rzam"), "র‍্যাম");
+        assert_eq!(p.convert("raem"), "র‍্যাম");
+        assert_eq!(p.convert("shikfa"), "শিক্ষা");
+        assert_eq!(p.convert("diikfa"), "দীক্ষা");
+        assert_eq!(p.convert("oncol"), "অঞ্চল");
+        assert_eq!(p.convert("poncash"), "পঞ্চাশ");
+        assert_eq!(p.convert("bancha"), "বাঞ্ছা");
+        assert_eq!(p.convert("gunjon"), "গুঞ্জন");
+        assert_eq!(p.convert("bznjon"), "ব্যঞ্জন");
+        assert_eq!(p.convert("jhonjhatf"), "ঝঞ্ঝাট");
+        assert_eq!(p.convert("ggan"), "জ্ঞান");
+        assert_eq!(p.convert("biggan"), "বিজ্ঞান");
+        assert_eq!(p.convert("duggga"), "দুগ্গা");
+        assert_eq!(p.convert("ottf"), "অট্ট");
+        assert_eq!(p.convert("cottfgram"), "চট্টগ্রাম");
+        assert_eq!(p.convert("addfa"), "আড্ডা");
+        assert_eq!(p.convert("shusfk"), "শুষ্ক");
+        assert_eq!(p.convert("misftfi"), "মিষ্টি");
+        assert_eq!(p.convert("kasftff"), "কাষ্ঠ");
+        assert_eq!(p.convert("kasftfh"), "কাষ্ঠ");
+        assert_eq!(p.convert("usfn"), "উষ্ণ");
+        assert_eq!(p.convert("basfp"), "বাষ্প");
+        assert_eq!(p.convert("nisfphol"), "নিষ্ফল");
+        assert_eq!(p.convert("kilqqn"), "কিল্ন");
+        assert_eq!(p.convert("udxxdiin"), "উদ্‌দীন");
+    }
+
+    #[test]
+    fn test_khipro_sentences() {
         let p = KhiproPhonetic::new();
         assert_eq!("ঘটোৎকচ", p.convert("ghotfwt/koc"));
         assert_eq!("আমার সোনার বাংলা", p.convert("amar swnar bangla"));
