@@ -11,6 +11,7 @@ description = "A Rust library for English to Bangla phonetic conversion followin
 [features]
 editor = []
 regex = []
+khipro = []
 rupantor_bench = []
 
 [lib]
