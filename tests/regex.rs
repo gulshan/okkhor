@@ -1,9 +1,9 @@
 #![cfg(feature = "regex")]
-use okkhor::parser::Parser;
+use okkhor::regex_suggestion::RegexSuggestion;
 
 #[test]
 fn regex_test_various() {
-    let p = Parser::new_regex();
+    let p = RegexSuggestion::new();
     assert_eq!(
         p.convert_regex("bhl"),
         "^(((ভ|(ব্?(হ|ঃ|(হ্‌?))))্?ল)|(ব্?((হ|ঃ|(হ্‌?))্?ল))|(ব্?(হ|ঃ|(হ্‌?))্?ল))(্[যবম])?(্?)([ঃঁ]?)$"
@@ -1004,7 +1004,7 @@ fn regex_test_various() {
 
 #[test]
 fn regex_word() {
-    let p = Parser::new_regex();
+    let p = RegexSuggestion::new();
     assert_eq!(p.convert_regex("osthir"), "^([ওোঅ]|(অ্য)|(য়ো?))(্[যবম])?(্?)([ঃঁ]?)([সশষ])(্[যবম])?(্?)([ঃঁ]?)(থ|ঠ|([তটৎ]্?(হ|ঃ|(হ্\u{200C}?))))(্[যবম])?(্?)([ঃঁ]?)([ইঈিী]|(য়[িী]))(্[যবম])?(্?)([ঃঁ]?)([রড়ঢ়]|(হ্র))(্[যবম])?(্?)([ঃঁ]?)$");
     assert_eq!(p.convert_regex("OSTHIR"), "^([ওোঅ]|(অ্য)|(য়ো?))(্[যবম])?(্?)([ঃঁ]?)([সশষ])(্[যবম])?(্?)([ঃঁ]?)(থ|ঠ|([তটৎ]্?(হ|ঃ|(হ্\u{200C}?))))(্[যবম])?(্?)([ঃঁ]?)([ইঈিী]|(য়[িী]))(্[যবম])?(্?)([ঃঁ]?)([রড়ঢ়]|(হ্র))(্[যবম])?(্?)([ঃঁ]?)$");
 }

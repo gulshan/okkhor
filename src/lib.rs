@@ -4,4 +4,4 @@ mod models;
 pub mod parser;
 mod patterns;
 #[cfg(feature = "regex")]
-mod regex_patterns;
+pub mod regex_suggestion;

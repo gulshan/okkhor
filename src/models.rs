@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 #[derive(Clone)]
 pub(crate) enum MatchType {
     Vowel,
@@ -35,5 +37,24 @@ impl Pattern {
             rules: NO_RULES,
             default_replacement: replace,
         }
+    }
+}
+
+pub(crate) struct Patterns(BTreeMap<&'static str, &'static Pattern>);
+
+impl Patterns {
+    pub(crate) fn new(patterns_input: &'static [Pattern]) -> Self {
+        let patterns = patterns_input
+            .iter()
+            .map(|p| (p.find, p))
+            .collect();
+        Self(patterns)
+    }
+
+    pub(crate) fn find_pattern(&self, input: &str) -> Option<&Pattern> {
+        self.0
+            .range(..=input)
+            .rfind(|(&k, _)| input.starts_with(k))
+            .map(|(_, &p)| p)
     }
 }
