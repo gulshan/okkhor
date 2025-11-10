@@ -629,9 +629,9 @@ enum State {
 }
 
 impl State {
-    fn groups(&self) -> Vec<Group> {
+    const fn groups(&self) -> &[Group] {
         match self {
-            State::Init => vec![
+            State::Init => &[
                 Group::Diacritic,
                 Group::Shor,
                 Group::Prithayok,
@@ -641,7 +641,7 @@ impl State {
                 Group::Juktoborno,
                 Group::Byanjon,
             ],
-            State::Shor => vec![
+            State::Shor => &[
                 Group::Diacritic,
                 Group::Shor,
                 Group::Biram,
@@ -651,14 +651,14 @@ impl State {
                 Group::Juktoborno,
                 Group::Byanjon,
             ],
-            State::Reph => vec![
+            State::Reph => &[
                 Group::Prithayok,
                 Group::Ae,
                 Group::Juktoborno,
                 Group::Byanjon,
                 Group::Kar,
             ],
-            State::Byanjon => vec![
+            State::Byanjon => &[
                 Group::Diacritic,
                 Group::Prithayok,
                 Group::Ongko,
@@ -671,7 +671,7 @@ impl State {
         }
     }
 
-    fn next_state(&self, group: &Group) -> State {
+    const fn next_state(&self, group: &Group) -> State {
         match self {
             State::Init => match group {
                 Group::Diacritic | Group::Shor => State::Shor,
@@ -707,7 +707,7 @@ pub struct KhiproPhonetic {
 
 impl KhiproPhonetic {
     pub fn new() -> Self {
-        let groups = vec![
+        let groups = [
             (Group::Shor, Patterns::new(SHOR_PHONETIC_PATTERNS)),
             (Group::Byanjon, Patterns::new(BYANJON_PHONETIC_PATTERNS)),
             (
@@ -749,11 +749,7 @@ impl KhiproPhonetic {
                 if let Some(patterns) = self.groups.get(group) {
                     if let Some(pattern) = patterns.find_pattern(input) {
                         if pattern.find.len() > match_len {
-                            join_char = if state == State::Byanjon && *group == Group::Phola {
-                                true
-                            } else {
-                                false
-                            };
+                            join_char = state == State::Byanjon && *group == Group::Phola;
                             match_len = pattern.find.len();
                             replacement = pattern.default_replacement;
                             next_state = state.next_state(group);
