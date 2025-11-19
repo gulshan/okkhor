@@ -97,11 +97,11 @@ impl Parser {
                 Some(pattern) => {
                     let suffix = input.chars().nth(pattern.find.len()).unwrap_or(' ');
                     output.push_str(get_replacement(pattern, prefix, suffix));
-                    prefix = pattern.find.chars().last().unwrap();
+                    pattern.find.chars().last().map(|c| prefix = c);
                     input = &input[pattern.find.len()..];
                 }
                 None => {
-                    prefix = input.chars().next().unwrap();
+                    input.chars().next().map(|c| prefix = c);
                     output.push(prefix);
                     input = &input[1..];
                 }

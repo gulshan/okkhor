@@ -766,7 +766,7 @@ impl KhiproPhonetic {
                 input = &input[match_len..];
                 state = next_state;
             } else {
-                output.push(input.chars().next().unwrap());
+                input.chars().next().map(|c| output.push(c));
                 input = &input[1..];
                 state = State::Init;
             }
