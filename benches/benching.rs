@@ -3,7 +3,7 @@ extern crate criterion;
 extern crate okkhor;
 extern crate rupantor;
 
-use criterion::black_box;
+use std::hint::black_box;
 use criterion::Criterion;
 #[cfg(not(feature = "regex"))]
 use okkhor::parser::Parser;

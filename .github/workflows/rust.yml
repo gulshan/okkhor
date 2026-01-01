@@ -9,7 +9,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Run tests
       run: cargo test --all-features --verbose
   build:
@@ -17,12 +17,12 @@ jobs:
       matrix:
         rust:
           - stable
-          - 1.63.0 # MSRV for linux distributions (>= Debian 12)
+          - 1.75.0 # MSRV for linux distributions (>= Debian 12)
           # - nightly  # To keep the MSRV, we can't test with nightly as some downgraded crates fails to compile
         platform: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
