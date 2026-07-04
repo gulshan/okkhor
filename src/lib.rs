@@ -2,8 +2,7 @@
 pub mod editor;
 #[cfg(feature = "khipro")]
 pub mod khipro;
-mod models;
 pub mod parser;
-mod patterns;
+pub mod phonetic;
 #[cfg(feature = "regex")]
 pub mod regex_suggestion;

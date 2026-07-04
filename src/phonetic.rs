@@ -1,6 +1,6 @@
-use crate::models::{Match::*, MatchType::*, Pattern, Rule};
+use crate::parser::{CharType::*, Match::*, Parser, Pattern, Patterns, Rule};
 
-pub(crate) const PHONETIC_PATTERNS: &[Pattern] = &[
+const PHONETIC_PATTERNS: &[Pattern] = &[
     Pattern::simple_replace("psh", "পশ"),
     Pattern::simple_replace("bhl", "ভ্ল"),
     Pattern::simple_replace("bdh", "ব্ধ"),
@@ -570,3 +570,11 @@ pub(crate) const PHONETIC_PATTERNS: &[Pattern] = &[
     Pattern::simple_replace("$", "৳"),
     Pattern::simple_replace("`", ""),
 ];
+
+impl Parser {
+    pub fn new_phonetic() -> Self {
+        Self {
+            patterns: Patterns::new(PHONETIC_PATTERNS),
+        }
+    }
+}

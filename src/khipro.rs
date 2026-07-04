@@ -1,4 +1,4 @@
-use crate::models::{Pattern, Patterns};
+use crate::parser::{Pattern, Patterns};
 use std::collections::HashMap;
 
 const SHOR_PHONETIC_PATTERNS: &[Pattern] = &[
@@ -766,7 +766,9 @@ impl KhiproPhonetic {
                 input = &input[match_len..];
                 state = next_state;
             } else {
-                input.chars().next().map(|c| output.push(c));
+                if let Some(c) = input.chars().next() {
+                    output.push(c);
+                }
                 input = &input[1..];
                 state = State::Init;
             }

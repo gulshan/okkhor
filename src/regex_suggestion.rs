@@ -1,9 +1,6 @@
-use crate::{
-    models::{Match::*, MatchType::*, Pattern, Patterns, Rule},
-    parser::get_replacement,
-};
+use crate::parser::{CharType::*, Match::*, Pattern, Patterns, Rule};
 
-pub(crate) const REGEX_PATTERNS: &[Pattern] = &[
+const REGEX_PATTERNS: &[Pattern] = &[
     Pattern::simple_replace("chchh", "((চ্ছ)|((চ|ছ|([চছ]্?(হ|ঃ|(হ্‌?))))্?(((চ|ছ|([চছ]্?(হ|ঃ|(হ্‌?))))্?((হ|ঃ|(হ্‌?)))?)|([চছ]্?((হ|ঃ|(হ্‌?))্?(হ|ঃ|(হ্‌?))))|([চছ]্?(হ|ঃ|(হ্‌?))্?(হ|ঃ|(হ্‌?)))))|((চ|ছ|([চছ]্?(হ|ঃ|(হ্‌?))))্?(চ|ছ|([চছ]্?(হ|ঃ|(হ্‌?))))্?(হ|ঃ|(হ্‌?)))|([চছ]্?(হ|ঃ|(হ্‌?))্?[চছ]্?(হ|ঃ|(হ্‌?))্?(হ|ঃ|(হ্‌?))))"),
     Pattern::simple_replace("ngkkh", "(((ঙ|ং|ঞ|(ঙ্গ)|([নণঁঙঞং]্?(গ|(জ্ঞ))))্?((ক্ষ)|((ক্?ক?)্?(হ|ঃ|(হ্‌?)))|(ক?্?(খ|(ক্ষ)|(ক্?(হ|ঃ|(হ্‌?)))))|(ক্?ক্?(হ|ঃ|(হ্‌?)))))|((((ঙ|ং|ঞ|(ঙ্গ)|([নণঁঙঞং]্?(গ|(জ্ঞ))))্?ক)|([নণঁঙঞং]্?(গ|(জ্ঞ))্?ক))্?(খ|(ক্ষ)|(ক্?(হ|ঃ|(হ্‌?)))))|((ঙ|ং|ঞ|(ঙ্গ)|([নণঁঙঞং]্?(গ|(জ্ঞ))))্?ক্?(খ|(ক্ষ)|(ক্?(হ|ঃ|(হ্‌?)))))|((ঙ|ং|ঞ|(ঙ্গ)|([নণঁঙঞং]্?(গ|(জ্ঞ))))্?(ক্?ক?)্?(হ|ঃ|(হ্‌?)))|([নণঁঙঞং]্?(গ|(জ্ঞ))্?ক্?ক্?(হ|ঃ|(হ্‌?))))"),
     Pattern::simple_replace("ngksh", "(((((ঙ|ং|ঞ|(ঙ্গ)|([নণঁঙঞং]্?(গ|(জ্ঞ))))্?ক)|([নণঁঙঞং]্?(গ|(জ্ঞ))্?ক))্?(স|শ|ষ|([সশষ]্?(হ|ঃ|(হ্‌?)))))|((ঙ|ং|ঞ|(ঙ্গ)|([নণঁঙঞং]্?(গ|(জ্ঞ))))্?ক্?(স|শ|ষ|([সশষ]্?(হ|ঃ|(হ্‌?)))))|((ঙ|ং|ঞ|(ঙ্গ)|([নণঁঙঞং]্?(গ|(জ্ঞ))))্?((ক্?(স|শ|ষ|([সশষ]্?(হ|ঃ|(হ্‌?)))))|((ক্?[সশষ])্?(হ|ঃ|(হ্‌?)))|(ক্?[সশষ]্?(হ|ঃ|(হ্‌?)))))|((ঙ|ং|ঞ|(ঙ্গ)|([নণঁঙঞং]্?(গ|(জ্ঞ))))্?(ক্?[সশষ])্?(হ|ঃ|(হ্‌?)))|([নণঁঙঞং]্?(গ|(জ্ঞ))্?ক্?[সশষ]্?(হ|ঃ|(হ্‌?))))"),
@@ -216,14 +213,18 @@ impl RegexSuggestion {
             match self.patterns.find_pattern(input) {
                 Some(pattern) => {
                     let suffix = input.chars().nth(pattern.find.len()).unwrap_or(' ');
-                    output.push_str(get_replacement(pattern, prefix, suffix));
+                    output.push_str(pattern.get_replacement(prefix, suffix));
                     output.push_str(EXTRA);
-                    pattern.find.chars().last().map(|c| prefix = c);
+                    if let Some(c) = pattern.find.chars().last() {
+                        prefix = c;
+                    }
                     input = &input[pattern.find.len()..];
                 }
                 None => {
-                    input.chars().next().map(|c| prefix = c);
-                    output.push(prefix);
+                    if let Some(c) = input.chars().next() {
+                        prefix = c;
+                        output.push(c);
+                    }
                     input = &input[1..];
                 }
             }
