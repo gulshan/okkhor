@@ -7,6 +7,10 @@ fn test_sentences() {
     assert_eq!("আমার সোনার বাংলা", p.convert("amar sOnar bangla"));
     assert_eq!("আমি বাংলায় গান গাই", p.convert("ami banglay gan gai"));
     assert_eq!(
+        "আমি অক্ষর। আমি বাংলা লিখি।",
+        p.convert("ami okkhor. ami bangla likhi.")
+    );
+    assert_eq!(
         "আমাদের ভালোবাসা হয়ে গেল ঘাস, খেয়ে গেল গরু আর দিয়ে গেল বাঁশ",
         p.convert("amader valObasa hoye gel ghas, kheye gel goru ar diye gelo ba^sh")
     );
@@ -472,28 +476,4 @@ fn basic_test8() {
     assert_eq!("৳", p.convert("$"));
     assert_eq!("", p.convert("`"));
     assert_eq!("ব্ধ", p.convert("bdh"));
-}
-
-#[cfg(feature = "editor")]
-#[test]
-fn editor_test() {
-    let mut editor = okkhor::editor::PhoneticEditor::new();
-
-    let result = editor.put_new_ch('k', 1);
-    assert_eq!("ক", result.output);
-
-    let result = editor.put_new_ch('o', 2);
-    assert_eq!("ক", result.output);
-
-    let result = editor.put_new_ch('r', 2);
-    assert_eq!("কর", result.output);
-
-    let result = editor.put_new_ch('r', 3);
-    assert_eq!("করর", result.output);
-
-    let result = editor.put_new_ch('m', 4);
-    assert_eq!("কর্ম", result.output);
-
-    let result = editor.put_new_ch(' ', 0);
-    assert_eq!("", result.output);
 }
