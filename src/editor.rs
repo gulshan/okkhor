@@ -10,14 +10,18 @@
 //!
 //! If a keystroke produces a character, give it to [`Editor::put_char`].
 //! Otherwise — arrow keys, function keys, a mouse click, the window losing
-//! focus — call [`Editor::put_non_char`]. Either way, read the returned
-//! [`Edit`]:
+//! focus — call [`Editor::put_non_char`]. Either way, read
+//! [`Edit::pass_through`]:
 //!
-//! - [`Edit::is_empty`] — the editor did not take the keystroke. Let it reach
-//!   the application unchanged.
-//! - anything else — the editor took it. Swallow the keystroke, erase
+//! - `true` — the editor did not take the keystroke. Let it reach the
+//!   application unchanged, and ignore the rest of the [`Edit`].
+//! - `false` — the editor took it. Swallow the keystroke, erase
 //!   [`Edit::backspaces`] characters from the end of the text on screen, and
 //!   type [`Edit::output`] in their place.
+//!
+//! Do not try to infer the first case from the other fields. A character can be
+//! taken and still leave the screen exactly as it was, because some letters
+//! only change how *later* ones convert.
 //!
 //! ```
 //! # use okkhor::editor::Editor;
@@ -42,13 +46,38 @@
 
 use crate::parser::Parser;
 
-/// The smallest change that turns what is on screen into what should be there.
+/// What the caller owes the screen after one keystroke.
 ///
-/// Erase the stale tail from the end of the text, then type [`Edit::output`].
-/// The two counts describe that same tail in different units; use whichever
-/// suits the thing being edited.
-#[derive(Default)]
+/// Read [`Edit::pass_through`] first: when it is set the editor took nothing
+/// and the remaining fields say nothing. Otherwise erase the stale tail from
+/// the end of the text and type [`Edit::output`] in its place. The two counts
+/// measure that same tail in different units; use whichever suits the thing
+/// being edited.
 pub struct Edit<'a> {
+    /// Whether the keystroke is still the caller's to deliver.
+    ///
+    /// `true` — the editor did not take it. Either it was not a character the
+    /// parser can use, or it ended the word. Send it on unchanged.
+    ///
+    /// `false` — the editor took it. Swallow the keystroke and apply the edit,
+    /// **even if the edit turns out to be empty**. That is not a contradiction:
+    /// a character can be buffered, change nothing on screen, and still decide
+    /// how the next one converts.
+    ///
+    /// ```
+    /// # use okkhor::editor::Editor;
+    /// let mut editor = Editor::new_phonetic();
+    /// editor.put_char('k');
+    ///
+    /// let edit = editor.put_char('o'); // ko still shows just ক
+    /// assert_eq!(edit.backspaces, 0);
+    /// assert_eq!(edit.output, "");
+    /// assert!(!edit.pass_through); // yet the o was taken
+    ///
+    /// // and it mattered: kor is কর, not ক followed by a literal o
+    /// assert_eq!(editor.put_char('r').output, "র");
+    /// ```
+    pub pass_through: bool,
     /// Length of the stale tail in UTF-8 bytes, for editing a Rust [`String`]
     /// with [`String::truncate`].
     pub byte_backspaces: usize,
@@ -61,21 +90,23 @@ pub struct Edit<'a> {
     /// lies in the basic multilingual plane, so no character it produces needs
     /// a surrogate pair.
     pub backspaces: usize,
-    /// What to type once the stale tail has been erased. Can be empty while
-    /// [`Edit::backspaces`] is not — see [`Edit::is_empty`].
+    /// What to type once the stale tail has been erased.
+    ///
+    /// Can be empty while [`Edit::backspaces`] is not: a backtick undoes a
+    /// conversion, so it erases what was on screen and types nothing in place
+    /// of it.
     pub output: &'a str,
 }
 
-impl Edit<'_> {
-    /// Nothing to do: the editor did not take the keystroke, so let it through.
-    ///
-    /// Both fields have to be tested. An ordinary keystroke that only appends
-    /// erases nothing, so `backspaces == 0` does not mean idle; and a backtick
-    /// can erase without typing anything — `` o` `` removes the `অ` that `o`
-    /// produced and puts nothing in its place — so an empty `output` does not
-    /// mean idle either.
-    pub fn is_empty(&self) -> bool {
-        self.backspaces == 0 && self.output.is_empty()
+/// An edit that asks for nothing, because nothing was taken.
+impl Default for Edit<'_> {
+    fn default() -> Self {
+        Edit {
+            pass_through: true,
+            byte_backspaces: 0,
+            backspaces: 0,
+            output: "",
+        }
     }
 }
 
@@ -106,12 +137,14 @@ impl Editor {
     /// Extend the current word with a typed character.
     ///
     /// Anything that cannot be part of a romanised word ends the word instead
-    /// and returns an empty [`Edit`], so the keystroke passes straight through:
-    /// non-ASCII characters, whitespace, and control characters such as the
-    /// U+0008 and U+001B that a key-to-character translation yields for
-    /// Backspace and Escape. Every `char` is therefore safe to pass, and the
-    /// returned edit says whether it was taken — the caller does not have to
-    /// know in advance which keys the parser can use.
+    /// and comes back with [`Edit::pass_through`] set: non-ASCII characters,
+    /// whitespace, and control characters such as the U+0008 and U+001B a
+    /// key-to-character translation yields for Backspace and Escape. Every
+    /// `char` is therefore safe to pass, and the edit says which happened — the
+    /// caller does not have to know in advance which keys the parser can use.
+    ///
+    /// When the character *is* taken the edit may still be empty; swallow the
+    /// keystroke anyway. See [`Edit::pass_through`].
     ///
     /// Note that a word is only ended, never committed: whatever is on screen
     /// stays there.
@@ -137,6 +170,7 @@ impl Editor {
             let backspaces = self.output[at..].chars().count();
             self.output = output;
             Edit {
+                pass_through: false,
                 byte_backspaces,
                 backspaces,
                 output: &self.output[at..],
@@ -151,9 +185,9 @@ impl Editor {
     /// and what is already on screen is left alone — the editor simply stops
     /// claiming it may edit it.
     ///
-    /// The returned [`Edit`] is always empty, since the keystroke is the
-    /// caller's to deliver. It is returned rather than omitted so that both
-    /// methods can feed one call site.
+    /// The returned [`Edit`] always has [`Edit::pass_through`] set, since the
+    /// keystroke is the caller's to deliver. It is returned rather than omitted
+    /// so that both methods can feed one call site.
     pub fn put_non_char<'a>(&'a mut self) -> Edit<'a> {
         self.reset();
         Edit::default()
@@ -291,13 +325,31 @@ mod tests {
         assert_eq!(editor.output, "");
     }
 
-    /// The one case where the output is empty and there is still work to do.
-    /// A backtick is Avro's "do not combine" escape, and after a lone `o` it
-    /// undoes the conversion outright.
+    /// A taken keystroke that changes nothing on screen.
     ///
-    /// This is why `Edit::is_empty` tests both fields. A caller keying on
-    /// `output.is_empty()` alone would treat this as a passthrough, leaving the
-    /// অ on screen with a stray backtick after it.
+    /// `o` after `k` is still just ক, so every count is zero and the output is
+    /// empty — but the `o` is buffered, and it is what makes the following `r`
+    /// give কর. This is the case `pass_through` exists for: a caller inferring
+    /// "not taken" from an empty edit would send the `o` on and type a literal
+    /// `o` into the text.
+    #[test]
+    fn a_character_can_be_taken_without_changing_the_screen() {
+        let mut editor = Editor::new_phonetic();
+        editor.put_char('k');
+
+        let edit = editor.put_char('o');
+        assert_eq!(edit.backspaces, 0);
+        assert_eq!(edit.byte_backspaces, 0);
+        assert_eq!(edit.output, "");
+        assert!(!edit.pass_through, "the o was buffered");
+
+        assert_eq!(editor.put_char('r').output, "র");
+    }
+
+    /// The other shape of empty edit, and the reason `output.is_empty()` was
+    /// never a safe test either. A backtick is Avro's "do not combine" escape,
+    /// and after a lone `o` it undoes the conversion outright: nothing to type,
+    /// but an অ still to erase.
     #[test]
     fn an_escape_can_erase_without_typing_anything() {
         let mut editor = Editor::new_phonetic();
@@ -306,7 +358,7 @@ mod tests {
         let edit = editor.put_char('`');
         assert_eq!(edit.backspaces, 1);
         assert_eq!(edit.output, "");
-        assert!(!edit.is_empty(), "there is still an অ to erase");
+        assert!(!edit.pass_through, "there is still an অ to erase");
     }
 
     /// The two counts describe the same tail, so they have to agree on it:
@@ -321,29 +373,29 @@ mod tests {
         assert_eq!(edit.byte_backspaces, 3);
     }
 
-    /// A space ends the word and is not consumed. The caller has to pass it on,
-    /// or it is lost from the text.
+    /// A space ends the word and is not taken. The caller has to pass it on, or
+    /// it is lost from the text.
     #[test]
-    fn an_empty_edit_means_the_keystroke_was_not_taken() {
+    fn a_space_is_passed_through() {
         let mut editor = Editor::new_phonetic();
         for ch in "ami".chars() {
             editor.put_char(ch);
         }
 
         let edit = editor.put_char(' ');
-        assert!(edit.is_empty());
+        assert!(edit.pass_through);
         assert_eq!(edit.backspaces, 0);
         assert_eq!(edit.byte_backspaces, 0);
         assert_eq!(edit.output, "");
     }
 
     #[test]
-    fn put_non_char_always_yields_an_empty_edit() {
+    fn put_non_char_always_passes_through() {
         let mut editor = Editor::new_phonetic();
-        assert!(editor.put_non_char().is_empty());
+        assert!(editor.put_non_char().pass_through);
 
         editor.put_char('k');
-        assert!(editor.put_non_char().is_empty());
+        assert!(editor.put_non_char().pass_through);
     }
 
     /// The parser byte-indexes its input and panics on anything multi-byte, so
@@ -356,7 +408,7 @@ mod tests {
             let mut editor = Editor::new_phonetic();
             editor.put_char('a');
 
-            assert!(editor.put_char(ch).is_empty(), "{ch:?} should be ignored");
+            assert!(editor.put_char(ch).pass_through, "{ch:?} should be ignored");
             assert_eq!(editor.output, "", "{ch:?} should have ended the word");
         }
     }
@@ -371,7 +423,7 @@ mod tests {
             let mut editor = Editor::new_phonetic();
             editor.put_char('a');
 
-            assert!(editor.put_char(ch).is_empty(), "{ch:?} should be ignored");
+            assert!(editor.put_char(ch).pass_through, "{ch:?} should be ignored");
             assert_eq!(editor.output, "", "{ch:?} should have ended the word");
         }
     }
